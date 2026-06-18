@@ -13,7 +13,7 @@
 const APP_CONFIG = {
   // Reemplaza esta URL por la que obtengas al desplegar el Apps Script
   // como "Web App". Debe terminar en /exec.
-  SHEETS_WEB_APP_URL: "https://script.google.com/macros/s/REEMPLAZAR_CON_TU_ID/exec",
+  SHEETS_WEB_APP_URL: "https://script.google.com/macros/s/AKfycbwEI9I2QGU6EP1CwrcHiPadcPPfEr-c8c38sLW2ySa_cREmxZc9oJm3yIijQKsynDTodg/exec",
 
   PROJECT_INFO: {
     titulo: "Trayectorias Estudiantiles: Permanencia y Discontinuidad Académica",
