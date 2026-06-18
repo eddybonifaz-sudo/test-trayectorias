@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Research Assesor — Sistema de Gestión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #1a6fb5;
+  --blue-light: #e6f1fb;
+  --blue-mid: #378add;
+  --green: #1D9E75;
+  --green-light: #EAF3DE;
+  --amber: #BA7517;
+  --amber-light: #FAEEDA;
+  --red: #E24B4A;
+  --red-light: #FCEBEB;
+  --gray: #f7f7f5;
+  --gray2: #efefed;
+  --gray3: #d3d1c7;
+  --border: rgba(0,0,0,0.09);
+  --text: #1a1a18;
+  --text2: #6b6b68;
+  --text3: #a0a09e;
+  --white: #ffffff;
+  --zoom: #2D8CFF;
+  --wa: #25D366;
+  --sidebar-w: 240px;
+  --topbar-h: 56px;
+  --font: 'DM Sans', system-ui, sans-serif;
+  --mono: 'DM Mono', monospace;
+  --r: 10px;
+  --r-lg: 14px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; font-family: var(--font); color: var(--text); background: var(--gray); overflow: hidden; }
+a { text-decoration: none; color: inherit; }
+
+/* ── LAYOUT ── */
+.app { display: flex; height: 100vh; height: 100dvh; }
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--white); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; z-index: 50;
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-logo { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); }
+.logo-mark { display: flex; align-items: center; gap: 10px; }
+.logo-r {
+  width: 36px; height: 36px; background: var(--blue); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 20px; font-weight: 600; letter-spacing: -1px;
+}
+.logo-text { line-height: 1.2; }
+.logo-text strong { font-size: 14px; font-weight: 600; display: block; color: var(--blue); }
+.logo-text span { font-size: 11px; color: var(--text3); }
+.nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
+.nav-section { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; padding: 10px 8px 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--r); cursor: pointer;
+  font-size: 13.5px; color: var(--text2); transition: all 0.15s; margin-bottom: 1px;
+  user-select: none;
+}
+.nav-item:hover { background: var(--gray); color: var(--text); }
+.nav-item.active { background: var(--blue-light); color: var(--blue); font-weight: 500; }
+.nav-item.active .nav-dot { background: var(--blue); }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-badge { margin-left: auto; background: var(--red); color: white; font-size: 10px; font-weight: 600; border-radius: 99px; padding: 1px 6px; min-width: 18px; text-align: center; }
+.sidebar-footer { padding: 14px 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text3); }
+.sidebar-footer strong { display: block; color: var(--text2); font-size: 12px; }
+
+/* ── MAIN ── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.topbar {
+  height: var(--topbar-h); min-height: var(--topbar-h);
+  background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; gap: 12px;
+}
+.topbar-hamburger { display: none; background: none; border: none; cursor: pointer; padding: 4px; border-radius: 6px; color: var(--text2); font-size: 20px; }
+.topbar-title { font-size: 15px; font-weight: 600; flex: 1; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.content { flex: 1; overflow-y: auto; padding: 20px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: var(--r); border: 1px solid var(--border);
+  font-size: 13px; font-family: var(--font); font-weight: 500;
+  cursor: pointer; background: var(--white); color: var(--text);
+  transition: all 0.15s; white-space: nowrap; user-select: none;
+}
+.btn:hover { background: var(--gray); }
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--blue); color: white; border-color: var(--blue); }
+.btn-primary:hover { background: #155fa3; border-color: #155fa3; }
+.btn-green { background: var(--wa); color: white; border-color: var(--wa); }
+.btn-green:hover { background: #1eb055; border-color: #1eb055; }
+.btn-zoom { background: var(--zoom); color: white; border-color: var(--zoom); }
+.btn-zoom:hover { background: #1a78ee; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-icon { padding: 7px; }
+.btn-danger { background: var(--red); color: white; border-color: var(--red); }
+.btn-outline { background: transparent; }
+
+/* ── CARDS & METRICS ── */
+.card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.card-title { font-size: 14px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.metric { background: var(--gray); border-radius: var(--r); padding: 14px 16px; }
+.metric-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 500; margin-bottom: 5px; }
+.metric-value { font-size: 24px; font-weight: 600; line-height: 1; }
+.metric-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
+.metric.blue .metric-value { color: var(--blue); }
+.metric.green .metric-value { color: var(--green); }
+.metric.amber .metric-value { color: var(--amber); }
+.metric.red .metric-value { color: var(--red); }
+.metric.zoom .metric-value { color: var(--zoom); }
+
+/* ── GRIDS ── */
+.g4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+.g3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+.g2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; margin-bottom: 18px; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  text-align: left; font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 0 12px 10px; border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--gray); }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; padding: 3px 9px;
+  border-radius: 99px; font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.badge-green { background: var(--green-light); color: #1a6645; }
+.badge-amber { background: var(--amber-light); color: #7a4c0a; }
+.badge-red { background: var(--red-light); color: #8b2020; }
+.badge-blue { background: var(--blue-light); color: #114f8a; }
+.badge-gray { background: var(--gray2); color: var(--text2); }
+.badge-zoom { background: #ddeeff; color: #0e5bc0; }
+.badge-purple { background: #f0edff; color: #4a3db0; }
+
+/* ── PROGRESS ── */
+.prog { height: 5px; background: var(--gray2); border-radius: 99px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 99px; background: var(--blue); transition: width 0.4s ease; }
+.prog-fill.done { background: var(--green); }
+
+/* ── AVATAR ── */
+.avatar {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; background: var(--blue-light); color: var(--blue);
+}
+.avatar-sm { width: 28px; height: 28px; font-size: 10px; }
+.ci { display: flex; align-items: center; gap: 10px; }
+
+/* ── FORMS ── */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; display: block; }
+.form-input {
+  width: 100%; padding: 9px 11px; border: 1px solid var(--border);
+  border-radius: var(--r); font-size: 13.5px; font-family: var(--font);
+  background: var(--white); color: var(--text); transition: border 0.15s;
+  -webkit-appearance: none; appearance: none;
+}
+.form-input:focus { outline: none; border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(26,111,181,0.1); }
+textarea.form-input { resize: vertical; min-height: 70px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; padding: 16px; backdrop-filter: blur(2px);
+  animation: fadeIn 0.15s ease;
+}
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+.modal {
+  background: var(--white); border-radius: var(--r-lg);
+  padding: 24px; width: 100%; max-width: 500px;
+  max-height: 90vh; overflow-y: auto;
+  animation: slideUp 0.2s cubic-bezier(.4,0,.2,1);
+  box-shadow: var(--shadow-md);
+}
+@keyframes slideUp { from { transform: translateY(16px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+.modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 18px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 4px; margin-bottom: 18px; flex-wrap: wrap; }
+.tab {
+  padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 500;
+  cursor: pointer; color: var(--text2); border: 1px solid transparent; transition: all 0.15s;
+}
+.tab:hover { background: var(--gray); }
+.tab.active { background: var(--blue-light); color: var(--blue); border-color: #b5d4f4; }
+
+/* ── ALERTS ── */
+.alert { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: var(--r); margin-bottom: 8px; }
+.alert-amber { background: var(--amber-light); }
+.alert-red { background: var(--red-light); }
+.alert-blue { background: var(--blue-light); }
+.alert-green { background: var(--green-light); }
+.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.alert-body { flex: 1; min-width: 0; }
+.alert-body strong { font-size: 13px; font-weight: 600; display: block; margin-bottom: 1px; }
+.alert-body span { font-size: 12px; color: var(--text2); }
+.alert-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+
+/* ── WA PREVIEW ── */
+.wa-bubble {
+  background: #dcf8c6; border-radius: 12px 12px 4px 12px;
+  padding: 12px 14px; font-size: 13px; color: #1a3d24;
+  white-space: pre-line; line-height: 1.55; margin: 10px 0;
+  border: 1px solid rgba(0,0,0,0.06); max-width: 90%;
+}
+
+/* ── ZOOM CARD ── */
+.zoom-session {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border: 1px solid var(--border);
+  border-radius: var(--r); margin-bottom: 8px; background: var(--white);
+  transition: box-shadow 0.15s;
+}
+.zoom-session:hover { box-shadow: var(--shadow); }
+.zoom-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.zoom-dot.proxima { background: var(--zoom); }
+.zoom-dot.hoy { background: var(--green); animation: pulse 1.5s infinite; }
+.zoom-dot.pasada { background: var(--gray3); }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+.zoom-time { font-size: 12px; color: var(--text3); width: 90px; flex-shrink: 0; }
+.zoom-info { flex: 1; min-width: 0; }
+.zoom-info strong { font-size: 13px; font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.zoom-info span { font-size: 12px; color: var(--text2); }
+.zoom-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+/* ── SHEETS ── */
+.code-block { font-family: var(--mono); font-size: 11.5px; background: #1e1e2e; color: #cdd6f4; border-radius: var(--r); padding: 16px; overflow-x: auto; line-height: 1.6; }
+.code-kw { color: #cba6f7; }
+.code-fn { color: #89dceb; }
+.code-str { color: #a6e3a1; }
+.code-com { color: #585b70; }
+.code-num { color: #fab387; }
+
+/* ── EMPTY ── */
+.empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; }
+.empty-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
+
+/* ── BAR CHART ── */
+.bar-wrap { display: flex; align-items: flex-end; gap: 5px; height: 80px; }
+.bar { flex: 1; border-radius: 4px 4px 0 0; background: #b5d4f4; cursor: pointer; transition: background 0.15s; min-height: 2px; position: relative; }
+.bar:hover { background: var(--blue); }
+.bar-labels { display: flex; gap: 5px; margin-top: 4px; }
+.bar-lbl { flex: 1; font-size: 10px; color: var(--text3); text-align: center; }
+
+/* ── MOBILE OVERLAY ── */
+.sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 49; }
+.bottom-nav { display: none; }
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 260px; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    transform: translateX(-100%); box-shadow: var(--shadow-md);
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-backdrop { display: block; }
+  .topbar-hamburger { display: flex; }
+  .content { padding: 14px; }
+  .g4 { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .g3 { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .g2 { grid-template-columns: 1fr; gap: 12px; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .topbar-actions .btn span { display: none; }
+  .topbar { padding: 0 14px; gap: 10px; }
+  table { font-size: 12px; }
+  thead th { padding: 0 8px 8px; }
+  tbody td { padding: 9px 8px; }
+  .btn { padding: 7px 12px; }
+  .btn-sm { padding: 5px 8px; font-size: 11px; }
+  .card { padding: 14px 16px; }
+  .metric-value { font-size: 20px; }
+  .modal { padding: 18px; }
+}
+@media (max-width: 480px) {
+  .g4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .g3 { grid-template-columns: 1fr 1fr; }
+  .tabs { gap: 3px; }
+  .tab { padding: 5px 10px; font-size: 12px; }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray3); border-radius: 99px; }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- SIDEBAR BACKDROP (mobile) -->
+  <div class="sidebar-backdrop" id="backdrop" onclick="closeSidebar()" style="display:none;"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-r">R</div>
+        <div class="logo-text">
+          <strong>Research Assesor</strong>
+          <span>Sistema de Gestión</span>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard"><span class="nav-icon">◉</span> Dashboard</div>
+      <div class="nav-item" onclick="nav('trabajos')" id="nav-trabajos"><span class="nav-icon">📋</span> Trabajos</div>
+      <div class="nav-item" onclick="nav('pagos')" id="nav-pagos"><span class="nav-icon">💳</span> Pagos</div>
+      <div class="nav-section">Clientes</div>
+      <div class="nav-item" onclick="nav('agenda')" id="nav-agenda"><span class="nav-icon">👥</span> Agenda</div>
+      <div class="nav-item" onclick="nav('recordatorios')" id="nav-recordatorios"><span class="nav-icon">💬</span> Recordatorios <span class="nav-badge" id="badge-recordatorios">0</span></div>
+      <div class="nav-section">Sesiones</div>
+      <div class="nav-item" onclick="nav('zoom')" id="nav-zoom"><span class="nav-icon">🎥</span> Sesiones Zoom</div>
+      <div class="nav-section">Datos</div>
+      <div class="nav-item" onclick="nav('sheets')" id="nav-sheets"><span class="nav-icon">📊</span> Google Sheets</div>
+    </nav>
+    <div class="sidebar-footer">
+      <strong>📱 +593 098 681 0281</strong>
+      Research Assesor
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="topbar-hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-actions" id="topbar-actions">
+        <button class="btn btn-primary" onclick="openNuevoTrabajo()"><span>+</span><span>Nuevo Trabajo</span></button>
+      </div>
+    </header>
+    <div class="content" id="content"></div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal-root"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  ESTADO GLOBAL
+// ═══════════════════════════════════════
+const EMPRESA_WA = "5930986810281";
+const MESES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const MESES_FULL = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const TIPOS = ["Trabajo de Grado","Maquetación de Artículo","Trabajo Académico","Tesis Doctoral","Artículo Científico","Ensayo","Revisión Bibliográfica","Otro"];
+const ESTADOS_MAP = {en_proceso:"En proceso", completado:"Completado", pendiente_pago:"Pendiente pago", cancelado:"Cancelado"};
+const ZOOM_ESTADOS = {programada:"Programada", completada:"Completada", cancelada:"Cancelada"};
+
+let S = {
+  page: 'dashboard',
+  tabTrabajo: 'todos',
+  mesActivo: new Date().getMonth(),
+  nextId: 6,
+  nextCId: 6,
+  nextZId: 5,
+  trabajos: [
+    {id:1,cliente:"María García",tel:"+593987654321",email:"maria@gmail.com",tipo:"Trabajo de Grado",titulo:"Análisis de sistemas educativos",total:350,pagos:[{fecha:"2025-01-15",monto:150,nota:"Pago inicial"}],estado:"en_proceso",fecha_inicio:"2025-01-15",fecha_limite:"2025-03-15",notas:"Cliente puntual"},
+    {id:2,cliente:"Carlos Mendoza",tel:"+593991234567",email:"carlos@gmail.com",tipo:"Maquetación de Artículo",titulo:"Artículo sobre biotecnología",total:200,pagos:[{fecha:"2025-01-20",monto:200,nota:"Pago completo"}],estado:"completado",fecha_inicio:"2025-01-20",fecha_limite:"2025-02-20",notas:""},
+    {id:3,cliente:"Ana Rodríguez",tel:"+593998765432",email:"ana@gmail.com",tipo:"Trabajo Académico",titulo:"Ensayo sobre economía",total:180,pagos:[{fecha:"2025-02-01",monto:80,nota:"Primer pago"}],estado:"pendiente_pago",fecha_inicio:"2025-02-01",fecha_limite:"2025-04-01",notas:"Recordar 2do pago"},
+    {id:4,cliente:"Luis Torres",tel:"+593993456789",email:"luis@gmail.com",tipo:"Tesis Doctoral",titulo:"Investigación en ingeniería civil",total:600,pagos:[{fecha:"2025-02-10",monto:200,nota:"Anticipo"}],estado:"en_proceso",fecha_inicio:"2025-02-10",fecha_limite:"2025-06-10",notas:"Proyecto grande"},
+    {id:5,cliente:"Sofia Vega",tel:"+593994567890",email:"sofia@gmail.com",tipo:"Artículo Científico",titulo:"Publicación en revista indexada",total:250,pagos:[],estado:"pendiente_pago",fecha_inicio:"2025-02-15",fecha_limite:"2025-03-15",notas:"Sin pago aún"},
+  ],
+  contactos: [
+    {id:1,nombre:"María García",tel:"+593987654321",email:"maria@gmail.com",notas:"Estudiante de maestría"},
+    {id:2,nombre:"Carlos Mendoza",tel:"+593991234567",email:"carlos@gmail.com",notas:"Docente universitario"},
+    {id:3,nombre:"Ana Rodríguez",tel:"+593998765432",email:"ana@gmail.com",notas:""},
+    {id:4,nombre:"Luis Torres",tel:"+593993456789",email:"luis@gmail.com",notas:"Ingeniero"},
+    {id:5,nombre:"Sofia Vega",tel:"+593994567890",email:"sofia@gmail.com",notas:""},
+  ],
+  sesiones: [
+    {id:1,cliente:"María García",tel:"+593987654321",tipo:"Revisión de avance",fecha:"2025-03-20",hora:"10:00",duracion:60,link:"https://zoom.us/j/123456789",estado:"programada",notas:"Revisar capítulo 3",tid:1},
+    {id:2,cliente:"Luis Torres",tel:"+593993456789",tipo:"Asesoría metodológica",fecha:"2025-03-18",hora:"15:00",duracion:90,link:"https://zoom.us/j/987654321",estado:"programada",notas:"Metodología capítulo 2",tid:4},
+    {id:3,cliente:"Carlos Mendoza",tel:"+593991234567",tipo:"Entrega final",fecha:"2025-02-28",hora:"11:00",duracion:45,link:"https://zoom.us/j/555666777",estado:"completada",notas:"Entrega exitosa",tid:2},
+    {id:4,cliente:"Ana Rodríguez",tel:"+593998765432",tipo:"Revisión inicial",fecha:"2025-03-25",hora:"09:00",duracion:60,link:"https://zoom.us/j/444333222",estado:"programada",notas:"Primera sesión",tid:3},
+  ],
+};
+
+// ═══════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════
+const getPagado = t => t.pagos.reduce((s,p)=>s+p.monto,0);
+const getPendiente = t => t.total - getPagado(t);
+const getPct = t => Math.round(getPagado(t)/t.total*100);
+const initials = n => n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const today = () => new Date().toISOString().split('T')[0];
+const fmtDate = d => { if(!d) return '—'; const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; };
+const fmtMoney = n => '$' + (n||0).toLocaleString('es-EC', {minimumFractionDigits:0, maximumFractionDigits:0});
+
+function getEstadoBadge(e) {
+  const m = {en_proceso:'badge-blue', completado:'badge-green', pendiente_pago:'badge-amber', cancelado:'badge-red'};
+  return `<span class="badge ${m[e]||'badge-gray'}">${ESTADOS_MAP[e]||e}</span>`;
+}
+function getZoomBadge(e) {
+  const m = {programada:'badge-zoom', completada:'badge-green', cancelada:'badge-red'};
+  return `<span class="badge ${m[e]||'badge-gray'}">${ZOOM_ESTADOS[e]||e}</span>`;
+}
+function avatar(nombre, size='') {
+  return `<div class="avatar${size?` ${size}`:''}"><span>${initials(nombre)}</span></div>`;
+}
+
+// ═══════════════════════════════════════
+//  NAVEGACIÓN
+// ═══════════════════════════════════════
+function nav(page) {
+  S.page = page;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el = document.getElementById('nav-'+page);
+  if(el) el.classList.add('active');
+  const titles = {dashboard:'Dashboard',trabajos:'Trabajos',pagos:'Pagos & Cobros',agenda:'Agenda de Contactos',recordatorios:'Recordatorios WhatsApp',zoom:'Sesiones Zoom',sheets:'Exportar a Google Sheets'};
+  document.getElementById('topbar-title').textContent = titles[page]||page;
+  const actions = {
+    trabajos:`<button class="btn btn-primary" onclick="openNuevoTrabajo()"><span>+</span><span>Nuevo Trabajo</span></button>`,
+    agenda:`<button class="btn btn-primary" onclick="openNuevoContacto()"><span>+</span><span>Contacto</span></button>`,
+    zoom:`<button class="btn btn-zoom" onclick="openNuevaSesion()"><span>🎥</span><span>Nueva Sesión</span></button>`,
+    dashboard:`<button class="btn btn-primary" onclick="openNuevoTrabajo()"><span>+</span><span>Nuevo Trabajo</span></button>`,
+    pagos:'', recordatorios:'', sheets:'',
+  };
+  document.getElementById('topbar-actions').innerHTML = actions[page]||'';
+  updateBadges();
+  render();
+  closeSidebar();
+}
+
+function updateBadges() {
+  const pendientes = S.trabajos.filter(t=>t.estado!=='completado'&&t.estado!=='cancelado'&&getPendiente(t)>0).length;
+  const badge = document.getElementById('badge-recordatorios');
+  if(badge) { badge.textContent = pendientes; badge.style.display = pendientes>0?'inline-flex':'none'; }
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('backdrop');
+  sb.classList.toggle('open');
+  bd.style.display = sb.classList.contains('open') ? 'block' : 'none';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('backdrop').style.display = 'none';
+}
+
+// ═══════════════════════════════════════
+//  RENDER PRINCIPAL
+// ═══════════════════════════════════════
+function render() {
+  const c = document.getElementById('content');
+  const fns = {dashboard:renderDashboard, trabajos:renderTrabajos, pagos:renderPagos, agenda:renderAgenda, recordatorios:renderRecordatorios, zoom:renderZoom, sheets:renderSheets};
+  c.innerHTML = (fns[S.page]||renderDashboard)();
+}
+
+// ═══════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════
+function renderDashboard() {
+  const todos = S.trabajos;
+  const totalCobrado = todos.reduce((s,t)=>s+getPagado(t),0);
+  const totalPendiente = todos.reduce((s,t)=>s+getPendiente(t),0);
+  const totalProyectado = todos.reduce((s,t)=>s+t.total,0);
+  const enProceso = todos.filter(t=>t.estado==='en_proceso').length;
+  const pendientePago = todos.filter(t=>t.estado==='pendiente_pago').length;
+
+  const hoy = new Date();
+  const mes = hoy.getMonth();
+  const mesesData = Array.from({length:6},(_,i)=>{
+    const m = (mes-5+i+12)%12;
+    const cobrado = todos.reduce((s,t)=>s+t.pagos.filter(p=>new Date(p.fecha).getMonth()===m).reduce((a,b)=>a+b.monto,0),0);
+    return {m, cobrado};
+  });
+  const maxBar = Math.max(...mesesData.map(d=>d.cobrado),1);
+
+  const alertas = todos.filter(t=>{
+    if(t.estado==='completado'||t.estado==='cancelado') return false;
+    if(getPendiente(t)<=0) return false;
+    const dias = Math.ceil((new Date(t.fecha_limite)-hoy)/(86400000));
+    return dias<=30 && dias>=0;
+  });
+
+  const sesionesHoy = S.sesiones.filter(s=>s.fecha===today()&&s.estado==='programada');
+  const sesionesProximas = S.sesiones.filter(s=>s.estado==='programada'&&s.fecha>today()).sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(0,3);
+
+  return `
+<div class="g4">
+  <div class="metric blue"><div class="metric-label">Total cobrado</div><div class="metric-value">${fmtMoney(totalCobrado)}</div><div class="metric-sub">de ${fmtMoney(totalProyectado)} proyectado</div></div>
+  <div class="metric amber"><div class="metric-label">Por cobrar</div><div class="metric-value">${fmtMoney(totalPendiente)}</div><div class="metric-sub">${pendientePago} trabajo(s)</div></div>
+  <div class="metric green"><div class="metric-label">En proceso</div><div class="metric-value">${enProceso}</div><div class="metric-sub">trabajos activos</div></div>
+  <div class="metric zoom"><div class="metric-label">Sesiones Zoom</div><div class="metric-value">${S.sesiones.filter(s=>s.estado==='programada').length}</div><div class="metric-sub">programadas</div></div>
+</div>
+
+${alertas.length>0?`<div class="card" style="margin-bottom:18px;">
+  <div class="card-title" style="margin-bottom:12px;"><span>⚠️ Vencimientos en los próximos 30 días</span></div>
+  ${alertas.map(t=>`<div class="alert alert-amber">
+    <span class="alert-icon">⏰</span>
+    <div class="alert-body"><strong>${t.cliente}</strong><span>${t.tipo} · Pendiente: ${fmtMoney(getPendiente(t))} · Vence: ${fmtDate(t.fecha_limite)}</span></div>
+    <div class="alert-actions">
+      <button class="btn btn-green btn-sm" onclick="enviarWA('${t.tel}','${t.cliente}',${getPendiente(t)},'${t.fecha_limite}','${t.tipo}')">📱 WA</button>
+      <button class="btn btn-sm" onclick="openDetalle(${t.id})">Ver</button>
+    </div>
+  </div>`).join('')}
+</div>`:''}
+
+${sesionesHoy.length>0?`<div class="alert alert-blue" style="margin-bottom:18px;border-radius:var(--r-lg);border:1px solid var(--border);">
+  <span class="alert-icon">🎥</span>
+  <div class="alert-body"><strong>Tienes ${sesionesHoy.length} sesión(es) Zoom hoy</strong><span>${sesionesHoy.map(s=>`${s.cliente} a las ${s.hora}`).join(' · ')}</span></div>
+  <div class="alert-actions"><button class="btn btn-zoom btn-sm" onclick="nav('zoom')">Ver agenda</button></div>
+</div>`:''}
+
+<div class="g2">
+  <div class="card">
+    <div class="card-title">Cobros últimos 6 meses</div>
+    <div class="bar-wrap">${mesesData.map(d=>`<div class="bar" style="height:${Math.round(d.cobrado/maxBar*100)}%" title="${fmtMoney(d.cobrado)}"></div>`).join('')}</div>
+    <div class="bar-labels" style="margin-top:5px;">${mesesData.map(d=>`<div class="bar-lbl">${MESES[d.m]}</div>`).join('')}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Próximas sesiones Zoom <button class="btn btn-sm btn-zoom" onclick="nav('zoom')">Ver todas</button></div>
+    ${sesionesProximas.length===0?`<div class="empty"><div class="empty-icon">🎥</div>Sin sesiones programadas</div>`:sesionesProximas.map(s=>`
+    <div class="zoom-session">
+      <div class="zoom-dot proxima"></div>
+      <div class="zoom-time">${fmtDate(s.fecha)}<br><span style="font-size:11px;">${s.hora}</span></div>
+      <div class="zoom-info"><strong>${s.cliente}</strong><span>${s.tipo}</span></div>
+      <div class="zoom-actions">
+        <a href="${s.link}" target="_blank" class="btn btn-zoom btn-sm">Unirse</a>
+      </div>
+    </div>`).join('')}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Trabajos recientes</div>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>Cliente</th><th>Tipo</th><th>Total</th><th>Pagado</th><th>Avance</th><th>Estado</th><th></th></tr></thead>
+    <tbody>
+    ${S.trabajos.slice(-5).reverse().map(t=>`<tr>
+      <td><div class="ci">${avatar(t.cliente)}${t.cliente}</div></td>
+      <td style="color:var(--text2);font-size:12px;">${t.tipo}</td>
+      <td style="font-weight:600;">${fmtMoney(t.total)}</td>
+      <td style="color:var(--green);font-weight:600;">${fmtMoney(getPagado(t))}</td>
+      <td style="min-width:70px;"><div style="font-size:11px;margin-bottom:3px;">${getPct(t)}%</div><div class="prog"><div class="prog-fill${getPct(t)>=100?' done':''}" style="width:${getPct(t)}%"></div></div></td>
+      <td>${getEstadoBadge(t.estado)}</td>
+      <td><button class="btn btn-sm" onclick="openDetalle(${t.id})">Ver</button></td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+  </div>
+</div>`;
+}
+
+// ═══════════════════════════════════════
+//  TRABAJOS
+// ═══════════════════════════════════════
+function renderTrabajos() {
+  const tabs = ['todos','en_proceso','pendiente_pago','completado','cancelado'];
+  const labels = {todos:'Todos',en_proceso:'En proceso',pendiente_pago:'Pendiente pago',completado:'Completados',cancelado:'Cancelados'};
+  const tab = S.tabTrabajo||'todos';
+  const filtered = tab==='todos' ? S.trabajos : S.trabajos.filter(t=>t.estado===tab);
+  return `
+<div class="tabs">${tabs.map(t=>`<div class="tab${tab===t?' active':''}" onclick="S.tabTrabajo='${t}';render();">${labels[t]}<span style="color:var(--text3);margin-left:5px;font-size:11px;">${tab===t?filtered.length:S.trabajos.filter(x=>x.estado===t||t==='todos').length}</span></div>`).join('')}</div>
+<div class="card" style="padding:0;overflow:hidden;">
+${filtered.length===0?`<div class="empty"><div class="empty-icon">📋</div>No hay trabajos aquí</div>`:`
+<div class="table-wrap">
+<table>
+<thead><tr><th>Cliente</th><th>Tipo</th><th>Total</th><th>Pagado</th><th>Pendiente</th><th>Avance</th><th>Estado</th><th>Vence</th><th></th></tr></thead>
+<tbody>
+${filtered.map(t=>`<tr>
+  <td><div class="ci">${avatar(t.cliente)}<div><div style="font-weight:600;font-size:13px;">${t.cliente}</div><div style="font-size:11px;color:var(--text3);">${t.tel}</div></div></div></td>
+  <td style="color:var(--text2);font-size:12px;white-space:nowrap;">${t.tipo}</td>
+  <td style="font-weight:600;">${fmtMoney(t.total)}</td>
+  <td style="color:var(--green);font-weight:600;">${fmtMoney(getPagado(t))}</td>
+  <td style="color:${getPendiente(t)>0?'var(--red)':'var(--green)'};font-weight:600;">${fmtMoney(getPendiente(t))}</td>
+  <td style="min-width:80px;"><div style="font-size:11px;margin-bottom:3px;">${getPct(t)}%</div><div class="prog"><div class="prog-fill${getPct(t)>=100?' done':''}" style="width:${getPct(t)}%"></div></div></td>
+  <td>${getEstadoBadge(t.estado)}</td>
+  <td style="font-size:12px;color:var(--text2);white-space:nowrap;">${fmtDate(t.fecha_limite)}</td>
+  <td><div style="display:flex;gap:4px;">
+    <button class="btn btn-sm" onclick="openDetalle(${t.id})">Ver</button>
+    ${getPendiente(t)>0?`<button class="btn btn-green btn-sm" onclick="enviarWA('${t.tel}','${t.cliente}',${getPendiente(t)},'${t.fecha_limite}','${t.tipo}')">📱</button>`:''}
+  </div></td>
+</tr>`).join('')}
+</tbody>
+</table>
+</div>`}
+</div>`;
+}
+
+// ═══════════════════════════════════════
+//  PAGOS
+// ═══════════════════════════════════════
+function renderPagos() {
+  const mes = S.mesActivo;
+  const pagosMes = [];
+  S.trabajos.forEach(t=>t.pagos.forEach(p=>{
+    if(new Date(p.fecha).getMonth()===mes) pagosMes.push({...p, cliente:t.cliente, tipo:t.tipo, tid:t.id});
+  }));
+  const totalMes = pagosMes.reduce((s,p)=>s+p.monto,0);
+  const proyeccion = S.trabajos.filter(t=>t.estado!=='completado'&&t.estado!=='cancelado').reduce((s,t)=>s+getPendiente(t),0);
+  const totalGeneral = S.trabajos.reduce((s,t)=>s+t.total,0);
+  const totalCobrado = S.trabajos.reduce((s,t)=>s+getPagado(t),0);
+
+  return `
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+  <span style="font-size:12px;color:var(--text3);margin-right:4px;">Mes:</span>
+  ${Array.from({length:12},(_,m)=>`<div class="tab${mes===m?' active':''}" onclick="S.mesActivo=${m};render();">${MESES[m]}</div>`).join('')}
+</div>
+<div class="g3">
+  <div class="metric green"><div class="metric-label">Cobrado en ${MESES[mes]}</div><div class="metric-value">${fmtMoney(totalMes)}</div><div class="metric-sub">${pagosMes.length} pago(s)</div></div>
+  <div class="metric amber"><div class="metric-label">Proyección pendiente</div><div class="metric-value">${fmtMoney(proyeccion)}</div><div class="metric-sub">total por cobrar</div></div>
+  <div class="metric blue"><div class="metric-label">Eficiencia cobro</div><div class="metric-value">${totalGeneral?Math.round(totalCobrado/totalGeneral*100):0}%</div><div class="metric-sub">${fmtMoney(totalCobrado)} de ${fmtMoney(totalGeneral)}</div></div>
+</div>
+<div class="card" style="padding:0;overflow:hidden;">
+  <div class="card-title" style="padding:16px 20px 0;">Pagos de ${MESES_FULL[mes]}</div>
+  ${pagosMes.length===0?`<div class="empty"><div class="empty-icon">💳</div>Sin pagos en ${MESES[mes]}</div>`:`
+  <div class="table-wrap">
+  <table>
+  <thead><tr><th>Fecha</th><th>Cliente</th><th>Tipo</th><th>Monto</th><th>Nota</th><th></th></tr></thead>
+  <tbody>
+  ${pagosMes.map(p=>`<tr>
+    <td style="font-size:12px;white-space:nowrap;">${fmtDate(p.fecha)}</td>
+    <td><div class="ci">${avatar(p.cliente,'avatar-sm')}<span>${p.cliente}</span></div></td>
+    <td style="font-size:12px;color:var(--text2);">${p.tipo}</td>
+    <td style="font-weight:600;color:var(--green);">${fmtMoney(p.monto)}</td>
+    <td style="font-size:12px;color:var(--text2);">${p.nota||'—'}</td>
+    <td><button class="btn btn-sm" onclick="openDetalle(${p.tid})">Ver trabajo</button></td>
+  </tr>`).join('')}
+  </tbody></table>
+  </div>`}
+</div>`;
+}
+
+// ═══════════════════════════════════════
+//  AGENDA
+// ═══════════════════════════════════════
+function renderAgenda() {
+  return `
+<div class="card" style="padding:0;overflow:hidden;">
+${S.contactos.length===0?`<div class="empty"><div class="empty-icon">👥</div>Sin contactos aún</div>`:`
+<div class="table-wrap">
+<table>
+<thead><tr><th>Contacto</th><th>Teléfono</th><th>Email</th><th>Notas</th><th></th></tr></thead>
+<tbody>
+${S.contactos.map(c=>`<tr>
+  <td><div class="ci">${avatar(c.nombre)}<span style="font-weight:600;">${c.nombre}</span></div></td>
+  <td style="font-size:13px;white-space:nowrap;">${c.tel}</td>
+  <td style="font-size:12px;color:var(--text2);">${c.email||'—'}</td>
+  <td style="font-size:12px;color:var(--text2);">${c.notas||'—'}</td>
+  <td><div style="display:flex;gap:5px;flex-wrap:nowrap;">
+    <button class="btn btn-green btn-sm" onclick="abrirWAContacto('${c.tel}','${c.nombre}')">📱 WA</button>
+    <button class="btn btn-zoom btn-sm" onclick="openNuevaSesionContacto(${c.id})">🎥 Zoom</button>
+    <button class="btn btn-sm" onclick="editarContacto(${c.id})">✏️</button>
+    <button class="btn btn-sm" style="color:var(--red);" onclick="eliminarContacto(${c.id})">✕</button>
+  </div></td>
+</tr>`).join('')}
+</tbody>
+</table>
+</div>`}
+</div>`;
+}
+
+// ═══════════════════════════════════════
+//  RECORDATORIOS
+// ═══════════════════════════════════════
+function renderRecordatorios() {
+  const pendientes = S.trabajos.filter(t=>t.estado!=='completado'&&t.estado!=='cancelado'&&getPendiente(t)>0);
+  return `
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-title">📱 Recordatorios de pago via WhatsApp</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:16px;">Envía recordatorios personalizados. Al hacer clic se abrirá WhatsApp con el mensaje listo para enviar.</p>
+  ${pendientes.length===0?`<div class="empty"><div class="empty-icon">✅</div>¡No hay pagos pendientes!</div>`:pendientes.map(t=>`
+  <div style="border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+      <div class="ci">${avatar(t.cliente)}<div>
+        <div style="font-weight:600;">${t.cliente}</div>
+        <div style="font-size:12px;color:var(--text2);">${t.tipo} · ${t.tel}</div>
+      </div></div>
+      <div style="text-align:right;">
+        <div style="font-weight:700;color:var(--red);font-size:18px;">${fmtMoney(getPendiente(t))}</div>
+        <div style="font-size:11px;color:var(--text3);">pendiente de ${fmtMoney(t.total)}</div>
+      </div>
+    </div>
+    <div class="wa-bubble">${generarMensaje(t.cliente, getPendiente(t), t.fecha_limite, t.tipo)}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+      <button class="btn btn-green btn-sm" onclick="enviarWA('${t.tel}','${t.cliente}',${getPendiente(t)},'${t.fecha_limite}','${t.tipo}')">📱 Enviar por WhatsApp</button>
+      <button class="btn btn-sm" onclick="personalizarRecordatorio(${t.id})">✏️ Personalizar</button>
+      <button class="btn btn-sm" onclick="openDetalle(${t.id})">Ver trabajo</button>
+    </div>
+  </div>`).join('')}
+</div>`;
+}
+
+// ═══════════════════════════════════════
+//  ZOOM SESSIONS
+// ═══════════════════════════════════════
+function renderZoom() {
+  const hoy = today();
+  const sesionesHoy = S.sesiones.filter(s=>s.fecha===hoy&&s.estado==='programada');
+  const proximas = S.sesiones.filter(s=>s.fecha>hoy&&s.estado==='programada').sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const pasadas = S.sesiones.filter(s=>(s.fecha<hoy||s.estado==='completada'||s.estado==='cancelada')).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+
+  const TIPOS_SESION = ["Asesoría inicial","Revisión de avance","Correcciones","Asesoría metodológica","Entrega de borradores","Entrega final","Seguimiento","Otro"];
+
+  return `
+<div class="g3" style="margin-bottom:18px;">
+  <div class="metric zoom"><div class="metric-label">Sesiones programadas</div><div class="metric-value">${S.sesiones.filter(s=>s.estado==='programada').length}</div><div class="metric-sub">pendientes</div></div>
+  <div class="metric green"><div class="metric-label">Completadas</div><div class="metric-value">${S.sesiones.filter(s=>s.estado==='completada').length}</div><div class="metric-sub">este historial</div></div>
+  <div class="metric blue"><div class="metric-label">Hoy</div><div class="metric-value">${sesionesHoy.length}</div><div class="metric-sub">sesión(es) hoy</div></div>
+</div>
+
+${sesionesHoy.length>0?`
+<div class="card" style="margin-bottom:18px;border:2px solid var(--zoom);">
+  <div class="card-title" style="color:var(--zoom);">🎥 Sesiones de hoy</div>
+  ${sesionesHoy.map(s=>`
+  <div class="zoom-session">
+    <div class="zoom-dot hoy"></div>
+    <div class="zoom-time"><strong style="color:var(--green);">${s.hora}</strong><br><span style="font-size:10px;">${s.duracion} min</span></div>
+    <div class="zoom-info"><strong>${s.cliente}</strong><span>${s.tipo}</span></div>
+    <div class="zoom-actions">
+      <a href="${s.link}" target="_blank" class="btn btn-zoom btn-sm">🎥 Unirse ahora</a>
+      <button class="btn btn-green btn-sm" onclick="enviarRecordatorioZoom(${s.id})">📱 Recordar</button>
+      <button class="btn btn-sm" onclick="editarSesion(${s.id})">⚙️</button>
+    </div>
+  </div>`).join('')}
+</div>`:''}
+
+<div class="card" style="margin-bottom:18px;">
+  <div class="card-title">📅 Próximas sesiones</div>
+  ${proximas.length===0?`<div class="empty"><div class="empty-icon">📅</div>No hay sesiones próximas</div>`:proximas.map(s=>`
+  <div class="zoom-session">
+    <div class="zoom-dot proxima"></div>
+    <div class="zoom-time">${fmtDate(s.fecha)}<br><span style="font-size:10px;">${s.hora} · ${s.duracion}min</span></div>
+    <div class="zoom-info"><strong>${s.cliente}</strong><span>${s.tipo}${s.notas?` · ${s.notas}`:''}</span></div>
+    <div class="zoom-actions">
+      <a href="${s.link}" target="_blank" class="btn btn-zoom btn-sm">🎥 Zoom</a>
+      <button class="btn btn-green btn-sm" onclick="enviarRecordatorioZoom(${s.id})">📱 WA</button>
+      <button class="btn btn-sm" onclick="editarSesion(${s.id})">✏️</button>
+      <button class="btn btn-sm" style="color:var(--red);" onclick="eliminarSesion(${s.id})">✕</button>
+    </div>
+  </div>`).join('')}
+</div>
+
+<div class="card">
+  <div class="card-title">📋 Historial de sesiones</div>
+  ${pasadas.length===0?`<div class="empty"><div class="empty-icon">📋</div>Sin historial</div>`:pasadas.map(s=>`
+  <div class="zoom-session" style="opacity:0.7;">
+    <div class="zoom-dot pasada"></div>
+    <div class="zoom-time">${fmtDate(s.fecha)}<br><span style="font-size:10px;">${s.hora}</span></div>
+    <div class="zoom-info"><strong>${s.cliente}</strong><span>${s.tipo}</span></div>
+    <div class="zoom-actions">
+      ${getZoomBadge(s.estado)}
+      <button class="btn btn-sm btn-sm" onclick="completarSesion(${s.id},'programada')">↩️</button>
+    </div>
+  </div>`).join('')}
+</div>`;
+}
+
+// ═══════════════════════════════════════
+//  GOOGLE SHEETS
+// ═══════════════════════════════════════
+function renderSheets() {
+  const csvTrabajos = generarCSVTrabajos();
+  const csvPagos = generarCSVPagos();
+  const csvSesiones = generarCSVSesiones();
+
+  return `
+<div class="g2">
+  <div class="card">
+    <div class="card-title">📥 Exportar datos</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Copia los datos en CSV y pégalos directamente en Google Sheets (Ctrl+V).</p>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="btn btn-primary" onclick="copiarCSV('trabajos')">📋 Copiar CSV — Trabajos</button>
+      <button class="btn btn-primary" onclick="copiarCSV('pagos')">📋 Copiar CSV — Pagos</button>
+      <button class="btn btn-zoom" onclick="copiarCSV('sesiones')">📋 Copiar CSV — Sesiones Zoom</button>
+    </div>
+    <div id="copy-msg" style="margin-top:10px;font-size:12px;color:var(--green);display:none;">✅ ¡Copiado al portapapeles!</div>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 Resumen exportable</div>
+    <table style="font-size:12px;">
+      <tr><td style="color:var(--text2);padding:5px 0;">Total trabajos</td><td style="font-weight:600;text-align:right;">${S.trabajos.length}</td></tr>
+      <tr><td style="color:var(--text2);padding:5px 0;">Total cobrado</td><td style="font-weight:600;text-align:right;color:var(--green);">${fmtMoney(S.trabajos.reduce((s,t)=>s+getPagado(t),0))}</td></tr>
+      <tr><td style="color:var(--text2);padding:5px 0;">Total pendiente</td><td style="font-weight:600;text-align:right;color:var(--red);">${fmtMoney(S.trabajos.reduce((s,t)=>s+getPendiente(t),0))}</td></tr>
+      <tr><td style="color:var(--text2);padding:5px 0;">Total proyectado</td><td style="font-weight:600;text-align:right;color:var(--blue);">${fmtMoney(S.trabajos.reduce((s,t)=>s+t.total,0))}</td></tr>
+      <tr><td style="color:var(--text2);padding:5px 0;">Sesiones Zoom</td><td style="font-weight:600;text-align:right;">${S.sesiones.length}</td></tr>
+      <tr><td style="color:var(--text2);padding:5px 0;">Contactos</td><td style="font-weight:600;text-align:right;">${S.contactos.length}</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:18px;">
+  <div class="card-title">⚙️ Google Apps Script — Importación automática</div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Pega este script en tu Google Sheet → Extensiones → Apps Script para poblar automáticamente las hojas de datos.</p>
+  <div style="position:relative;">
+    <button class="btn btn-sm" style="position:absolute;top:8px;right:8px;z-index:2;" onclick="copiarScript()">📋 Copiar</button>
+    <div class="code-block" id="code-script">${renderAppsScript()}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">📋 Instrucciones de uso</div>
+  <ol style="font-size:13px;color:var(--text2);line-height:2;padding-left:18px;">
+    <li>Abre tu Google Sheet en <a href="https://sheets.google.com" target="_blank" style="color:var(--blue);">sheets.google.com</a></li>
+    <li>Ve a <strong>Extensiones → Apps Script</strong></li>
+    <li>Borra el contenido existente y pega el script copiado</li>
+    <li>Haz clic en <strong>Ejecutar → importarTodos()</strong></li>
+    <li>Autoriza los permisos cuando se solicite</li>
+    <li>Las hojas "Trabajos", "Pagos" y "Sesiones Zoom" se crearán automáticamente</li>
+    <li>Para actualizar datos, simplemente corre <strong>importarTodos()</strong> de nuevo</li>
+  </ol>
+</div>`;
+}
+
+function renderAppsScript() {
+  const trabData = JSON.stringify(S.trabajos.map(t=>({
+    Cliente:t.cliente, Telefono:t.tel, Email:t.email, Tipo:t.tipo, Titulo:t.titulo,
+    Total:t.total, Pagado:getPagado(t), Pendiente:getPendiente(t),
+    Estado:ESTADOS_MAP[t.estado]||t.estado, FechaLimite:t.fecha_limite, Notas:t.notas
+  }))).replace(/"/g,'&quot;');
+
+  const pagosData = JSON.stringify(S.trabajos.flatMap(t=>t.pagos.map(p=>({
+    Fecha:p.fecha, Cliente:t.cliente, Tipo:t.tipo, Monto:p.monto, Nota:p.nota||''
+  })))).replace(/"/g,'&quot;');
+
+  const sesData = JSON.stringify(S.sesiones.map(s=>({
+    Fecha:s.fecha, Hora:s.hora, Cliente:s.cliente, Tipo:s.tipo,
+    Duracion:s.duracion+'min', Link:s.link, Estado:ZOOM_ESTADOS[s.estado]||s.estado, Notas:s.notas
+  }))).replace(/"/g,'&quot;');
+
+  return `<span class="code-com">// Research Assesor — Google Apps Script</span>
+<span class="code-com">// Generado: ${new Date().toLocaleDateString('es-EC')}</span>
+
+<span class="code-kw">function</span> <span class="code-fn">importarTodos</span>() {
+  importarHoja(<span class="code-str">'Trabajos'</span>, trabajosData());
+  importarHoja(<span class="code-str">'Pagos'</span>, pagosData());
+  importarHoja(<span class="code-str">'Sesiones Zoom'</span>, sesionesData());
+  SpreadsheetApp.getUi().alert(<span class="code-str">'✅ Datos importados correctamente'</span>);
+}
+
+<span class="code-kw">function</span> <span class="code-fn">importarHoja</span>(nombre, datos) {
+  <span class="code-kw">const</span> ss = SpreadsheetApp.getActiveSpreadsheet();
+  <span class="code-kw">let</span> hoja = ss.getSheetByName(nombre);
+  <span class="code-kw">if</span> (!hoja) hoja = ss.insertSheet(nombre);
+  hoja.clearContents();
+  <span class="code-kw">if</span> (datos.length === <span class="code-num">0</span>) <span class="code-kw">return</span>;
+  <span class="code-kw">const</span> headers = Object.keys(datos[<span class="code-num">0</span>]);
+  <span class="code-kw">const</span> rows = datos.map(r => headers.map(h => r[h]));
+  hoja.getRange(<span class="code-num">1</span>, <span class="code-num">1</span>, <span class="code-num">1</span>, headers.length).setValues([headers])
+    .setFontWeight(<span class="code-str">'bold'</span>).setBackground(<span class="code-str">'#1a6fb5'</span>).setFontColor(<span class="code-str">'white'</span>);
+  <span class="code-kw">if</span> (rows.length > <span class="code-num">0</span>)
+    hoja.getRange(<span class="code-num">2</span>, <span class="code-num">1</span>, rows.length, headers.length).setValues(rows);
+  hoja.autoResizeColumns(<span class="code-num">1</span>, headers.length);
+}
+
+<span class="code-kw">function</span> <span class="code-fn">trabajosData</span>() {
+  <span class="code-com">// Reemplaza con tu API o usa los datos pegados desde la app</span>
+  <span class="code-kw">return</span> [
+    { Cliente:<span class="code-str">"${S.trabajos[0]?.cliente||''}"</span>, Tipo:<span class="code-str">"${S.trabajos[0]?.tipo||''}"</span>, Total:<span class="code-num">${S.trabajos[0]?.total||0}</span>, Pagado:<span class="code-num">${getPagado(S.trabajos[0]||{pagos:[]})}</span>, Estado:<span class="code-str">"${ESTADOS_MAP[S.trabajos[0]?.estado]||''}"</span> },
+    <span class="code-com">// ... más filas (usar botón "Copiar CSV" arriba y pegar en la hoja directamente)</span>
+  ];
+}
+<span class="code-kw">function</span> <span class="code-fn">pagosData</span>() { <span class="code-kw">return</span> []; <span class="code-com">/* Ver CSV de Pagos */</span> }
+<span class="code-kw">function</span> <span class="code-fn">sesionesData</span>() { <span class="code-kw">return</span> []; <span class="code-com">/* Ver CSV de Sesiones */</span> }`;
+}
+
+function generarCSVTrabajos() {
+  let csv = 'Cliente,Teléfono,Email,Tipo,Título,Total,Pagado,Pendiente,Estado,Fecha Inicio,Fecha Límite,Notas\n';
+  S.trabajos.forEach(t=>{
+    csv += `"${t.cliente}","${t.tel}","${t.email||''}","${t.tipo}","${t.titulo}",${t.total},${getPagado(t)},${getPendiente(t)},"${ESTADOS_MAP[t.estado]}","${t.fecha_inicio}","${t.fecha_limite}","${t.notas||''}"\n`;
+  });
+  return csv;
+}
+function generarCSVPagos() {
+  let csv = 'Fecha,Cliente,Tipo,Monto,Nota\n';
+  S.trabajos.forEach(t=>t.pagos.forEach(p=>{
+    csv += `"${p.fecha}","${t.cliente}","${t.tipo}",${p.monto},"${p.nota||''}"\n`;
+  }));
+  return csv;
+}
+function generarCSVSesiones() {
+  let csv = 'Fecha,Hora,Cliente,Tipo,Duración,Link Zoom,Estado,Notas\n';
+  S.sesiones.forEach(s=>{
+    csv += `"${s.fecha}","${s.hora}","${s.cliente}","${s.tipo}",${s.duracion},"${s.link}","${ZOOM_ESTADOS[s.estado]}","${s.notas||''}"\n`;
+  });
+  return csv;
+}
+
+function copiarCSV(tipo) {
+  const csvMap = {trabajos:generarCSVTrabajos, pagos:generarCSVPagos, sesiones:generarCSVSesiones};
+  const csv = csvMap[tipo]();
+  navigator.clipboard.writeText(csv).then(()=>{
+    const msg = document.getElementById('copy-msg');
+    if(msg){msg.style.display='block';setTimeout(()=>msg.style.display='none',2500);}
+    else alert('¡CSV copiado! Pégalo en Google Sheets con Ctrl+V');
+  }).catch(()=>alert(csv));
+}
+
+function copiarScript() {
+  const script = `// Research Assesor — Google Apps Script\nfunction importarTodos() {\n  importarHoja('Trabajos', trabajosData());\n  importarHoja('Pagos', pagosData());\n  importarHoja('Sesiones Zoom', sesionesData());\n  SpreadsheetApp.getUi().alert('✅ Datos importados');\n}\n\nfunction importarHoja(nombre, datos) {\n  const ss = SpreadsheetApp.getActiveSpreadsheet();\n  let hoja = ss.getSheetByName(nombre);\n  if (!hoja) hoja = ss.insertSheet(nombre);\n  hoja.clearContents();\n  if (datos.length === 0) return;\n  const headers = Object.keys(datos[0]);\n  const rows = datos.map(r => headers.map(h => r[h]));\n  hoja.getRange(1,1,1,headers.length).setValues([headers]).setFontWeight('bold').setBackground('#1a6fb5').setFontColor('white');\n  if (rows.length > 0) hoja.getRange(2,1,rows.length,headers.length).setValues(rows);\n  hoja.autoResizeColumns(1, headers.length);\n}\n\nfunction trabajosData() {\n  return ${JSON.stringify(S.trabajos.map(t=>({Cliente:t.cliente,Telefono:t.tel,Tipo:t.tipo,Titulo:t.titulo,Total:t.total,Pagado:getPagado(t),Pendiente:getPendiente(t),Estado:ESTADOS_MAP[t.estado]||t.estado,FechaLimite:t.fecha_limite})))};\n}\nfunction pagosData() {\n  return ${JSON.stringify(S.trabajos.flatMap(t=>t.pagos.map(p=>({Fecha:p.fecha,Cliente:t.cliente,Tipo:t.tipo,Monto:p.monto,Nota:p.nota||''}))))};\n}\nfunction sesionesData() {\n  return ${JSON.stringify(S.sesiones.map(s=>({Fecha:s.fecha,Hora:s.hora,Cliente:s.cliente,Tipo:s.tipo,Duracion:s.duracion+'min',Link:s.link,Estado:ZOOM_ESTADOS[s.estado]||s.estado,Notas:s.notas||''})))};\n}`;
+  navigator.clipboard.writeText(script).then(()=>alert('✅ Script copiado. Pégalo en Apps Script de Google Sheets'));
+}
+
+// ═══════════════════════════════════════
+//  WHATSAPP
+// ═══════════════════════════════════════
+function generarMensaje(nombre, monto, fecha, tipo) {
+  return `Hola ${nombre} 👋\n\nTe recordamos de parte de *Research Assesor* que tienes un saldo pendiente de *${fmtMoney(monto)} USD* por el servicio de *${tipo}*.\n\nFecha límite de pago: *${fmtDate(fecha)}*\n\nPor favor, comunícate con nosotros para coordinar tu pago.\n\n¡Gracias por tu confianza! 🙏\n\n_Research Assesor_\n📱 +593 098 681 0281`;
+}
+
+function generarMensajeZoom(s) {
+  return `Hola ${s.cliente} 👋\n\nTe recordamos que tienes una *sesión de tutoría Zoom* programada:\n\n📅 *Fecha:* ${fmtDate(s.fecha)}\n⏰ *Hora:* ${s.hora}\n⏱️ *Duración:* ${s.duracion} minutos\n📝 *Tipo:* ${s.tipo}\n\n🔗 *Enlace Zoom:*\n${s.link}\n\n¡Te esperamos!\n\n_Research Assesor_\n📱 +593 098 681 0281`;
+}
+
+function enviarWA(tel, nombre, monto, fecha, tipo) {
+  const msg = encodeURIComponent(generarMensaje(nombre, monto, fecha, tipo));
+  window.open(`https://wa.me/${tel.replace(/\D/g,'')}?text=${msg}`, '_blank');
+}
+
+function abrirWAContacto(tel, nombre) {
+  const msg = encodeURIComponent(`Hola ${nombre}! 👋 Te contactamos desde *Research Assesor*. ¿En qué podemos ayudarte?`);
+  window.open(`https://wa.me/${tel.replace(/\D/g,'')}?text=${msg}`, '_blank');
+}
+
+function enviarRecordatorioZoom(id) {
+  const s = S.sesiones.find(x=>x.id===id);
+  if(!s) return;
+  const msg = encodeURIComponent(generarMensajeZoom(s));
+  window.open(`https://wa.me/${s.tel.replace(/\D/g,'')}?text=${msg}`, '_blank');
+}
+
+function personalizarRecordatorio(id) {
+  const t = S.trabajos.find(x=>x.id===id);
+  showModal(`<h3>✏️ Personalizar recordatorio</h3>
+  <div class="form-group">
+    <label class="form-label">Mensaje WhatsApp</label>
+    <textarea class="form-input" id="msg-custom" style="height:180px;">${generarMensaje(t.cliente,getPendiente(t),t.fecha_limite,t.tipo)}</textarea>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-green" onclick="enviarWACustom('${t.tel}')">📱 Enviar por WhatsApp</button>
+  </div>`);
+}
+function enviarWACustom(tel) {
+  const msg = encodeURIComponent(document.getElementById('msg-custom').value);
+  window.open(`https://wa.me/${tel.replace(/\D/g,'')}?text=${msg}`, '_blank');
+  closeModal();
+}
+
+// ═══════════════════════════════════════
+//  CRUD TRABAJOS
+// ═══════════════════════════════════════
+function openNuevoTrabajo() {
+  const opts = S.contactos.map(c=>`<option value="${c.nombre}" data-tel="${c.tel}">${c.nombre}</option>`).join('');
+  showModal(`<h3>📋 Nuevo Trabajo</h3>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">Cliente</label>
+      <select class="form-input" id="f-cliente" onchange="autoFillTel(this)">
+        ${opts}<option value="__nuevo__">+ Nuevo cliente</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Teléfono</label>
+      <input type="tel" class="form-input" id="f-tel" placeholder="+593...">
+    </div>
+  </div>
+  <div class="form-group"><label class="form-label">Tipo de servicio</label>
+    <select class="form-input" id="f-tipo">${TIPOS.map(t=>`<option>${t}</option>`).join('')}</select>
+  </div>
+  <div class="form-group"><label class="form-label">Título del trabajo</label>
+    <input type="text" class="form-input" id="f-titulo" placeholder="Ej: Análisis de sistemas educativos">
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">Valor total (USD)</label>
+      <input type="number" class="form-input" id="f-total" placeholder="350" min="0">
+    </div>
+    <div class="form-group"><label class="form-label">Pago inicial (USD)</label>
+      <input type="number" class="form-input" id="f-pago-ini" placeholder="0" min="0">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">Fecha inicio</label>
+      <input type="date" class="form-input" id="f-inicio" value="${today()}">
+    </div>
+    <div class="form-group"><label class="form-label">Fecha límite</label>
+      <input type="date" class="form-input" id="f-limite">
+    </div>
+  </div>
+  <div class="form-group"><label class="form-label">Notas</label>
+    <textarea class="form-input" id="f-notas" placeholder="Observaciones..."></textarea>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarTrabajo()">Guardar Trabajo</button>
+  </div>`);
+  autoFillTel(document.getElementById('f-cliente'));
+}
+
+function autoFillTel(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  const tf = document.getElementById('f-tel');
+  if(tf && sel.value!=='__nuevo__') tf.value = opt.getAttribute('data-tel')||'';
+  else if(tf && sel.value==='__nuevo__') tf.value = '';
+}
+
+function guardarTrabajo() {
+  let clienteNombre = document.getElementById('f-cliente').value;
+  if(clienteNombre==='__nuevo__') {
+    clienteNombre = prompt('Nombre del nuevo cliente:');
+    if(!clienteNombre) return;
+  }
+  const tel = document.getElementById('f-tel').value;
+  const tipo = document.getElementById('f-tipo').value;
+  const titulo = document.getElementById('f-titulo').value;
+  const total = parseFloat(document.getElementById('f-total').value)||0;
+  const pagoIni = parseFloat(document.getElementById('f-pago-ini').value)||0;
+  const inicio = document.getElementById('f-inicio').value;
+  const limite = document.getElementById('f-limite').value;
+  const notas = document.getElementById('f-notas').value;
+  if(!titulo || total<=0) return alert('Completa el título y el valor total');
+  const t = {id:S.nextId++, cliente:clienteNombre, tel, email:'', tipo, titulo, total, pagos:[], estado:'en_proceso', fecha_inicio:inicio, fecha_limite:limite, notas};
+  if(pagoIni>0) t.pagos.push({fecha:inicio, monto:pagoIni, nota:'Pago inicial'});
+  if(getPendiente(t)<=0) t.estado='completado';
+  if(!S.contactos.find(c=>c.nombre===clienteNombre))
+    S.contactos.push({id:S.nextCId++, nombre:clienteNombre, tel, email:'', notas:''});
+  S.trabajos.push(t);
+  closeModal(); render(); updateBadges();
+}
+
+function openDetalle(id) {
+  const t = S.trabajos.find(x=>x.id===id);
+  if(!t) return;
+  showModal(`<h3>📋 ${t.cliente}</h3>
+  <div style="font-size:12px;color:var(--text2);margin-bottom:14px;">${t.tipo} · ${t.titulo}</div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;">
+    <div class="metric"><div class="metric-label">Total</div><div class="metric-value blue" style="font-size:18px;">${fmtMoney(t.total)}</div></div>
+    <div class="metric"><div class="metric-label">Pagado</div><div class="metric-value green" style="font-size:18px;">${fmtMoney(getPagado(t))}</div></div>
+    <div class="metric"><div class="metric-label">Pendiente</div><div class="metric-value ${getPendiente(t)>0?'red':'green'}" style="font-size:18px;">${fmtMoney(getPendiente(t))}</div></div>
+    <div class="metric"><div class="metric-label">Avance</div><div class="metric-value blue" style="font-size:18px;">${getPct(t)}%</div></div>
+  </div>
+  <div class="form-group"><label class="form-label">Estado</label>
+    <select class="form-input" onchange="cambiarEstado(${t.id},this.value)">
+      ${Object.entries(ESTADOS_MAP).map(([v,l])=>`<option value="${v}"${t.estado===v?' selected':''}>${l}</option>`).join('')}
+    </select>
+  </div>
+  <div style="font-weight:600;font-size:13px;margin:12px 0 8px;">Historial de pagos</div>
+  <div id="lista-pagos-${t.id}">
+    ${t.pagos.length===0?`<p style="font-size:12px;color:var(--text3);">Sin pagos registrados</p>`:t.pagos.map(p=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;"><span>${fmtDate(p.fecha)} — ${p.nota||'Pago'}</span><span style="color:var(--green);font-weight:600;">${fmtMoney(p.monto)}</span></div>`).join('')}
+  </div>
+  <div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+    <input type="number" class="form-input" id="np-monto" placeholder="Monto USD" style="flex:1;">
+    <input type="text" class="form-input" id="np-nota" placeholder="Nota" style="flex:2;">
+    <button class="btn btn-primary btn-sm" onclick="agregarPago(${t.id})">+ Pago</button>
+  </div>
+  ${getPendiente(t)>0?`<div style="margin-top:10px;"><button class="btn btn-green" style="width:100%;" onclick="enviarWA('${t.tel}','${t.cliente}',${getPendiente(t)},'${t.fecha_limite}','${t.tipo}')">📱 Enviar recordatorio WhatsApp</button></div>`:''}
+  <div class="modal-footer"><button class="btn" onclick="closeModal()">Cerrar</button></div>`);
+}
+
+function agregarPago(id) {
+  const t = S.trabajos.find(x=>x.id===id);
+  const monto = parseFloat(document.getElementById('np-monto').value)||0;
+  const nota = document.getElementById('np-nota').value;
+  if(monto<=0) return alert('Ingresa un monto válido');
+  t.pagos.push({fecha:today(), monto, nota});
+  if(getPendiente(t)<=0) t.estado='completado';
+  else if(t.estado==='pendiente_pago') t.estado='en_proceso';
+  openDetalle(id); render(); updateBadges();
+}
+
+function cambiarEstado(id, estado) {
+  const t = S.trabajos.find(x=>x.id===id);
+  if(t) t.estado = estado;
+  render(); updateBadges();
+}
+
+// ═══════════════════════════════════════
+//  CRUD CONTACTOS
+// ═══════════════════════════════════════
+function openNuevoContacto() {
+  showModal(`<h3>👤 Nuevo Contacto</h3>
+  <div class="form-group"><label class="form-label">Nombre completo</label><input type="text" class="form-input" id="c-nombre"></div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">Teléfono</label><input type="tel" class="form-input" id="c-tel" placeholder="+593..."></div>
+    <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="c-email"></div>
+  </div>
+  <div class="form-group"><label class="form-label">Notas</label><textarea class="form-input" id="c-notas"></textarea></div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarContacto()">Guardar</button>
+  </div>`);
+}
+
+function editarContacto(id) {
+  const c = S.contactos.find(x=>x.id===id);
+  showModal(`<h3>✏️ Editar Contacto</h3>
+  <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="c-nombre" value="${c.nombre}"></div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">Teléfono</label><input type="tel" class="form-input" id="c-tel" value="${c.tel}"></div>
+    <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="c-email" value="${c.email||''}"></div>
+  </div>
+  <div class="form-group"><label class="form-label">Notas</label><textarea class="form-input" id="c-notas">${c.notas||''}</textarea></div>
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="guardarContacto(${id})">Guardar</button>
+  </div>`);
+}
+
+function guardarContacto(id) {
+  const nombre = document.getElementById('c-nombre').value;
+  const tel = document.getElementById('c-tel').value;
+  const email = document.getElementById('c-email').value;
+  const notas = document.getElementById('c-notas').value;
+  if(!nombre) return;
+  if(id) { const c=S.contactos.find(x=>x.id===id); Object.assign(c,{nombre,tel,email,notas}); }
+  else S.contactos.push({id:S.nextCId++, nombre, tel, email, notas});
+  closeModal(); render();
+}
+
+function eliminarContacto(id) {
+  if(!confirm('¿Eliminar contacto?')) return;
+  S.contactos = S.contactos.filter(c=>c.id!==id);
+  render();
+}
+
+// ═══════════════════════════════════════
+//  CRUD SESIONES ZOOM
+// ═══════════════════════════════════════
+const TIPOS_SESION = ["Asesoría inicial","Revisión de avance","Correcciones","Asesoría metodológica","Entrega de borradores","Entrega final","Seguimiento","Otro"];
+
+function sesionForm(s) {
+  const opts = S.contactos.map(c=>`<option value="${c.nombre}" data-tel="${c.tel}"${s&&s.cliente===c.nombre?' selected':''}>${c.nombre}</option>`).join('');
+  return `
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">Cliente</label>
+      <select class="form-input" id="z-cliente" onchange="autoFillZoomTel(this)">
+        ${opts}
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Teléfono</label>
+      <input type="tel" class="form-input" id="z-tel" placeholder="+593..." value="${s?s.tel:''}">
+    </div>
+  </div>
+  <div class="form-group"><label class="form-label">Tipo de sesión</label>
+    <select class="form-input" id="z-tipo">${TIPOS_SESION.map(t=>`<option${s&&s.tipo===t?' selected':''}>${t}</option>`).join('')}</select>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">Fecha</label>
+      <input type="date" class="form-input" id="z-fecha" value="${s?s.fecha:today()}">
+    </div>
+    <div class="form-group"><label class="form-label">Hora</label>
+      <input type="time" class="form-input" id="z-hora" value="${s?s.hora:'09:00'}">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group"><label class="form-label">Duración (minutos)</label>
+      <input type="number" class="form-input" id="z-dur" value="${s?s.duracion:60}" min="15" step="15">
+    </div>
+    <div class="form-group"><label class="form-label">Trabajo relacionado</label>
+      <select class="form-input" id="z-tid">
+        <option value="">— Ninguno —</option>
+        ${S.trabajos.map(t=>`<option value="${t.id}"${s&&s.tid===t.id?' selected':''}>${t.cliente} — ${t.tipo.slice(0,20)}</option>`).join('')}
+      </select>
+    </div>
+  </div>
+  <div class="form-group"><label class="form-label">Link Zoom</label>
+    <input type="url" class="form-input" id="z-link" placeholder="https://zoom.us/j/..." value="${s?s.link:''}">
+    <div style="margin-top:6px;font-size:11px;color:var(--text3);">💡 Crea el meeting en Zoom y pega el link aquí.</div>
+  </div>
+  <div class="form-group"><label class="form-label">Notas</label>
+    <textarea class="form-input" id="z-notas" placeholder="Temas a tratar...">${s?s.notas:''}</textarea>
+  </div>`;
+}
+
+function autoFillZoomTel(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  const tf = document.getElementById('z-tel');
+  if(tf) tf.value = opt.getAttribute('data-tel')||'';
+}
+
+function openNuevaSesion() {
+  showModal(`<h3>🎥 Nueva Sesión Zoom</h3>
+  ${sesionForm(null)}
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-zoom" onclick="guardarSesion()">Agendar Sesión</button>
+  </div>`);
+  autoFillZoomTel(document.getElementById('z-cliente'));
+}
+
+function openNuevaSesionContacto(cid) {
+  const c = S.contactos.find(x=>x.id===cid);
+  showModal(`<h3>🎥 Agendar sesión con ${c.nombre}</h3>
+  ${sesionForm({cliente:c.nombre, tel:c.tel})}
+  <div class="modal-footer">
+    <button class="btn" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-zoom" onclick="guardarSesion()">Agendar Sesión</button>
+  </div>`);
+}
+
+function editarSesion(id) {
+  const s = S.sesiones.find(x=>x.id===id);
+  showModal(`<h3>✏️ Editar Sesión</h3>
+  ${sesionForm(s)}
+  <div class="modal-footer">
+    <button class="btn btn-danger btn-sm" onclick="eliminarSesion(${id});closeModal();">Eliminar</button>
+    <button class="btn" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-zoom" onclick="guardarSesion(${id})">Guardar</button>
+  </div>`);
+}
+
+function guardarSesion(id) {
+  const cliente = document.getElementById('z-cliente').value;
+  const tel = document.getElementById('z-tel').value;
+  const tipo = document.getElementById('z-tipo').value;
+  const fecha = document.getElementById('z-fecha').value;
+  const hora = document.getElementById('z-hora').value;
+  const duracion = parseInt(document.getElementById('z-dur').value)||60;
+  const link = document.getElementById('z-link').value;
+  const notas = document.getElementById('z-notas').value;
+  const tid = parseInt(document.getElementById('z-tid').value)||null;
+  if(!fecha||!hora) return alert('Ingresa fecha y hora');
+  const data = {cliente, tel, tipo, fecha, hora, duracion, link:link||'https://zoom.us/j/000000000', notas, tid, estado:'programada'};
+  if(id) { const s=S.sesiones.find(x=>x.id===id); Object.assign(s, data); }
+  else S.sesiones.push({id:S.nextZId++, ...data});
+  closeModal(); render();
+}
+
+function eliminarSesion(id) {
+  if(!confirm('¿Eliminar sesión?')) return;
+  S.sesiones = S.sesiones.filter(s=>s.id!==id);
+  render();
+}
+
+function completarSesion(id, estado) {
+  const s = S.sesiones.find(x=>x.id===id);
+  if(s) { s.estado = estado||'completada'; render(); }
+}
+
+// ═══════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════
+function showModal(html) {
+  document.getElementById('modal-root').innerHTML =
+    `<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`;
+}
+function closeModal() { document.getElementById('modal-root').innerHTML = ''; }
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+updateBadges();
+render();
+</script>
+</body>
+</html>

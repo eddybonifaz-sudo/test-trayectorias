@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Research Assesor</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+.app{display:flex;min-height:100vh}
+aside{width:210px;flex-shrink:0;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.logo{padding:16px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:10px}
+.logo-sq{width:32px;height:32px;background:#1d4ed8;border-radius:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;color:#1d4ed8}
+nav{padding:8px;flex:1}
+.ni{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#475569;margin-bottom:1px;border:none;background:none;width:100%;text-align:left}
+.ni:hover{background:#eff6ff;color:#1d4ed8}
+.ni.on{background:#dbeafe;color:#1d4ed8;font-weight:700}
+.foot{padding:12px;border-top:1px solid #e2e8f0;font-size:12px}
+.fn{font-weight:700;color:#1e293b}.fr{color:#94a3b8;margin-bottom:8px}
+main{flex:1;display:flex;flex-direction:column}
+.topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:12px 20px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10}
+.topbar h2{font-size:15px;font-weight:700;flex:1}
+.page{padding:20px;flex:1}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px}
+.kpi-i{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.kpi-n{font-size:24px;font-weight:800;line-height:1}.kpi-l{font-size:11px;color:#94a3b8;margin-top:2px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin-bottom:16px}
+.card-hd{padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f1f5f9}
+.card-hd h3{font-size:13px;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 14px;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;border-bottom:1px solid #f1f5f9;background:#f8faff}
+td{padding:10px 14px;border-bottom:1px solid #f8fafc}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8faff}
+.empty{text-align:center;padding:32px;color:#94a3b8;font-size:13px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
+.btn:active{opacity:.8}
+.btn-p{background:#1d4ed8;color:#fff}
+.btn-sm{padding:4px 9px;font-size:12px;border-radius:7px}
+.btn-g{background:transparent;color:#475569;border:1px solid #e2e8f0}
+.btn-g:hover{background:#f0f6ff;color:#1d4ed8}
+.btn-r{background:#fee2e2;color:#dc2626;border:1px solid #fecaca}
+.b{display:inline-flex;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.bg{background:#dcfce7;color:#15803d}.bb{background:#dbeafe;color:#1d4ed8}
+.ba{background:#fef3c7;color:#b45309}.br{background:#fee2e2;color:#dc2626}.bx{background:#f1f5f9;color:#475569}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.modal{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal h3{font-size:15px;font-weight:800;color:#1d4ed8;margin-bottom:18px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg .full{grid-column:1/-1}
+label{display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:3px;text-transform:uppercase}
+input,select,textarea{width:100%;padding:8px 11px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:inherit;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#1d4ed8;box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+textarea{resize:vertical;min-height:64px}
+.ma{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;border-top:1px solid #f1f5f9;padding-top:14px}
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1e3a8a,#1d4ed8)}
+.lb{background:#fff;border-radius:18px;padding:32px;width:340px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.lb h1{font-size:20px;font-weight:800;color:#1d4ed8;margin-bottom:3px}
+.lb p{font-size:12px;color:#94a3b8;margin-bottom:22px}
+.sp{display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.sp-ok{background:#dcfce7;color:#15803d}.sp-ld{background:#fef3c7;color:#b45309}.sp-er{background:#fee2e2;color:#dc2626}
+.toast{position:fixed;bottom:18px;right:18px;z-index:200;padding:11px 18px;border-radius:10px;color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.tb{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tb input{max-width:240px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;animation:spin .8s linear infinite}
+@media(max-width:700px){aside{display:none}.fg{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.page{padding:12px}}
+</style>
+</head>
+<body>
+<div id="R"></div>
+<script>
+const API='https://script.google.com/macros/s/AKfycbzqeby9GceuHt8ep8X2QqVUV_U4PUztJUvMRsLipduxQoxY0lqU0sz7Is8nZ3WB929Pjg/exec'
+const USERS=[
+  {id:'u1',u:'admin', p:'research2024',role:'admin',name:'Administrador'},
+  {id:'u2',u:'edison',p:'asesor2024',  role:'admin',name:'Edison Bonifaz'},
+]
+
+// API — idéntico a PubTracker que funciona
+async function apiGet(action){
+  try{const r=await fetch(API+'?action='+action+'&t='+Date.now());return await r.json()}
+  catch(e){return{error:e.message}}
+}
+async function apiPost(body){
+  try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});return await r.json()}
+  catch(e){return{error:e.message}}
+}
+
+// Estado global
+let user=null,page='dashboard',modal=null
+let data={clientes:[],trabajos:[],cuotas:[],abonos:[],reuniones:[]}
+let loading=false,syncing=false,syncMsg='',syncErr=false,search=''
+
+function draw(){document.getElementById('R').innerHTML=user?htmlApp():htmlLogin()}
+
+// LOGIN
+function htmlLogin(){
+  return '<div class="lw"><div class="lb">'
+    +'<h1>Research Assesor</h1><p>Coordinación de Investigación · UNO</p>'
+    +'<div id="lerr" style="display:none;color:#dc2626;font-size:12px;margin-bottom:10px;background:#fee2e2;padding:8px;border-radius:6px"></div>'
+    +'<div style="margin-bottom:10px"><label>Usuario</label><input id="lu" value="admin"/></div>'
+    +'<div style="margin-bottom:18px"><label>Contraseña</label><input id="lp" type="password" value="research2024"/></div>'
+    +'<button class="btn btn-p" style="width:100%;justify-content:center;padding:10px" onclick="doLogin()">Ingresar</button>'
+    +'<p style="font-size:11px;color:#94a3b8;margin-top:12px;text-align:center">admin/research2024 · edison/asesor2024</p>'
+    +'</div></div>'
+}
+function doLogin(){
+  const u=document.getElementById('lu').value.trim()
+  const p=document.getElementById('lp').value.trim()
+  const found=USERS.find(x=>x.u===u&&x.p===p)
+  if(!found){const e=document.getElementById('lerr');e.textContent='Credenciales incorrectas';e.style.display='block';return}
+  user=found;loadData()
+}
+
+// CARGAR — llama apiGet igual que PubTracker
+async function loadData(){
+  loading=true;syncMsg='Cargando...';syncErr=false;draw()
+  const r=await apiGet('getData')
+  if(r&&!r.error){
+    data={
+      clientes:  r.clientes  ||[],
+      trabajos:  r.trabajos  ||[],
+      cuotas:    r.cuotas    ||[],
+      abonos:    r.abonos    ||[],
+      reuniones: r.reuniones ||[],
+    }
+    syncMsg='Actualizado '+new Date().toLocaleTimeString('es-EC');syncErr=false
+  }else{syncMsg='Error: '+(r&&r.error||'Sin conexión');syncErr=true}
+  loading=false;draw()
+}
+
+// GUARDAR — patrón PubTracker: actualiza UI, llama API, recarga
+async function saveRec(tabla,rec,isNew){
+  const key=tabla.toLowerCase()
+  if(isNew) data[key]=[...data[key],rec]
+  else      data[key]=data[key].map(x=>x.id===rec.id?rec:x)
+  modal=null;draw()
+  syncing=true;syncMsg='Guardando...';draw()
+  const action=isNew?'insertar':'actualizar'
+  const r=await apiPost({action,tabla,fila:rec,id:rec.id})
+  syncing=false
+  if(r&&r.ok){toast('Guardado ✓');await loadData()}
+  else{toast('Error: '+(r&&r.error||'Fallo'),'err');await loadData()}
+}
+
+async function delRec(tabla,id,msg){
+  if(!confirm(msg||'¿Eliminar?'))return
+  data[tabla.toLowerCase()]=data[tabla.toLowerCase()].filter(x=>x.id!==id);draw()
+  const r=await apiPost({action:'eliminar',tabla,id})
+  if(r&&r.ok){toast('Eliminado ✓');await loadData()}
+  else{toast('Error: '+(r&&r.error||''),'err');await loadData()}
+}
+
+function toast(msg,type){
+  const d=document.createElement('div')
+  d.className='toast';d.style.background=type==='err'?'#dc2626':'#15803d'
+  d.textContent=(type==='err'?'✗ ':'✓ ')+msg
+  document.body.appendChild(d);setTimeout(()=>d.remove(),3000)
+}
+
+// HELPERS
+const v=id=>(document.getElementById(id)||{}).value||''
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+const jss=o=>esc(JSON.stringify(o))
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5)
+function bdg(t,c){const m={green:'bg',blue:'bb',amber:'ba',red:'br'};return'<span class="b '+(m[c]||'bx')+'">'+esc(t)+'</span>'}
+
+// APP
+const NAV=[{id:'dashboard',l:'Dashboard',ic:'📊'},{id:'clientes',l:'Clientes',ic:'👥'},{id:'trabajos',l:'Trabajos',ic:'💼'},{id:'cobros',l:'Cobros',ic:'💰'},{id:'reuniones',l:'Reuniones',ic:'📅'}]
+const TITLES={dashboard:'Panel principal',clientes:'Clientes',trabajos:'Trabajos',cobros:'Cobros',reuniones:'Reuniones'}
+
+function htmlApp(){
+  const sc=syncErr?'sp-er':loading||syncing?'sp-ld':'sp-ok'
+  return '<div class="app">'
+    +'<aside><div class="logo"><div class="logo-sq">R</div><span class="logo-name">Research</span></div>'
+    +'<nav>'+NAV.map(n=>'<button class="ni'+(page===n.id?' on':'')+'" onclick="goto(\''+n.id+'\')">'+n.ic+' '+n.l+'</button>').join('')+'</nav>'
+    +'<div class="foot"><div class="fn">'+esc(user.name)+'</div><div class="fr">'+esc(user.role)+'</div>'
+    +'<button class="btn btn-g btn-sm" style="width:100%;justify-content:center" onclick="user=null;draw()">Salir</button></div></aside>'
+    +'<main><div class="topbar"><h2>'+TITLES[page]+'</h2>'
+    +'<div class="sp '+sc+'">'+(loading||syncing?'<span class="spin">⟳</span> ':'')+esc(syncMsg||'Listo')+'</div>'
+    +'<button class="btn btn-g btn-sm" onclick="loadData()" title="Recargar">⟳</button></div>'
+    +'<div class="page">'+htmlPage()+'</div></main>'
+    +(modal?htmlModal():'')
+    +'</div>'
+}
+
+function goto(p){page=p;search='';draw()}
+function htmlPage(){
+  if(page==='dashboard')return htmlDash()
+  if(page==='clientes') return htmlClientes()
+  if(page==='trabajos') return htmlTrabajos()
+  if(page==='cobros')   return htmlCobros()
+  if(page==='reuniones')return htmlReuniones()
+  return ''
+}
+
+// DASHBOARD
+function htmlDash(){
+  const {clientes,trabajos,cuotas,abonos}=data
+  const cobrado  =abonos.reduce((s,a)=>s+parseFloat(a.monto||0),0)
+  const pendiente=cuotas.filter(c=>c.estado!=='pagado').reduce((s,c)=>s+(parseFloat(c.acordado||0)-parseFloat(c.pagado||0)),0)
+  const activos  =trabajos.filter(t=>t.estado!=='Completado'&&t.estado!=='Cancelado').length
+  const vencidas =cuotas.filter(c=>c.estado==='vencido').length
+  let html='<div class="kpis">'
+    +'<div class="kpi"><div class="kpi-i" style="background:#dbeafe">👥</div><div><div class="kpi-n">'+clientes.length+'</div><div class="kpi-l">Clientes</div></div></div>'
+    +'<div class="kpi"><div class="kpi-i" style="background:#dcfce7">💼</div><div><div class="kpi-n">'+activos+'</div><div class="kpi-l">Trabajos activos</div></div></div>'
+    +'<div class="kpi"><div class="kpi-i" style="background:#dcfce7">💰</div><div><div class="kpi-n" style="color:#15803d">$'+cobrado.toFixed(0)+'</div><div class="kpi-l">Cobrado</div></div></div>'
+    +'<div class="kpi"><div class="kpi-i" style="background:#fef3c7">⏰</div><div><div class="kpi-n" style="color:#b45309">$'+pendiente.toFixed(0)+'</div><div class="kpi-l">Por cobrar</div></div></div>'
+    +(vencidas?'<div class="kpi"><div class="kpi-i" style="background:#fee2e2">⚠️</div><div><div class="kpi-n" style="color:#dc2626">'+vencidas+'</div><div class="kpi-l">Vencidas</div></div></div>':'')
+    +'</div>'
+  html+='<div class="card"><div class="card-hd"><h3>Clientes recientes</h3></div>'
+    +'<table><thead><tr><th>Nombre</th><th>Institución</th><th>Ciudad</th><th>Teléfono</th></tr></thead><tbody>'
+  const recent=[...clientes].reverse().slice(0,5)
+  if(recent.length){recent.forEach(c=>{html+='<tr><td><strong>'+esc(c.nombre)+'</strong></td><td>'+esc(c.institucion||'—')+'</td><td>'+esc(c.ciudad||'—')+'</td><td>'+esc(c.telefono||'—')+'</td></tr>'})}
+  else html+='<tr><td colspan="4" class="empty">Sin clientes aún</td></tr>'
+  html+='</tbody></table></div>'
+  return html
+}
+
+// CLIENTES
+function htmlClientes(){
+  const q=search.toLowerCase()
+  const list=data.clientes.filter(c=>!q||(c.nombre+' '+c.institucion+' '+c.ciudad).toLowerCase().includes(q))
+  let html='<div class="tb"><input placeholder="Buscar..." oninput="search=this.value;draw()" value="'+esc(search)+'"/>'
+    +'<button class="btn btn-p" onclick="openModal(\'cliente\',null)">+ Nuevo cliente</button></div>'
+  html+='<div class="card"><table><thead><tr><th>Nombre</th><th>Institución</th><th>Ciudad</th><th>Teléfono</th><th>Email</th><th></th></tr></thead><tbody>'
+  if(list.length){list.forEach(c=>{
+    html+='<tr><td><strong>'+esc(c.nombre)+'</strong></td><td>'+esc(c.institucion||'—')+'</td><td>'+esc(c.ciudad||'—')+'</td><td>'+esc(c.telefono||'—')+'</td><td>'+esc(c.email||'—')+'</td>'
+    +'<td><span style="display:flex;gap:5px"><button class="btn btn-g btn-sm" onclick=\'openModal("cliente",'+jss(c)+')\'>✏️</button>'
+    +'<button class="btn btn-r btn-sm" onclick="delRec(\'Clientes\',\''+c.id+'\',\'¿Eliminar cliente?\')">🗑</button></span></td></tr>'
+  })}else html+='<tr><td colspan="6" class="empty">Sin clientes registrados</td></tr>'
+  html+='</tbody></table></div>'
+  return html
+}
+
+// TRABAJOS
+function htmlTrabajos(){
+  const {trabajos,clientes}=data
+  const SC={Completado:'green','En progreso':'blue','Revisión':'blue',Cancelado:'red'}
+  let html='<div class="tb"><button class="btn btn-p" onclick="openModal(\'trabajo\',null)">+ Nuevo trabajo</button></div>'
+  html+='<div class="card"><table><thead><tr><th>Título</th><th>Cliente</th><th>Tipo</th><th>Estado</th><th>Total</th><th></th></tr></thead><tbody>'
+  if(trabajos.length){trabajos.forEach(t=>{
+    const cl=clientes.find(c=>c.id===t.clienteId)
+    html+='<tr><td><strong>'+esc(t.titulo)+'</strong></td><td>'+esc(cl&&cl.nombre||t.clienteNombre||'—')+'</td><td style="font-size:12px">'+esc(t.tipo||'—')+'</td>'
+    +'<td>'+bdg(t.estado||'Nuevo',SC[t.estado]||'amber')+'</td><td><strong>$'+esc(t.total||0)+'</strong></td>'
+    +'<td><span style="display:flex;gap:5px"><button class="btn btn-g btn-sm" onclick=\'openModal("trabajo",'+jss(t)+')\'>✏️</button>'
+    +'<button class="btn btn-r btn-sm" onclick="delRec(\'Trabajos\',\''+t.id+'\',\'¿Eliminar trabajo?\')">🗑</button></span></td></tr>'
+  })}else html+='<tr><td colspan="6" class="empty">Sin trabajos registrados</td></tr>'
+  html+='</tbody></table></div>'
+  return html
+}
+
+// COBROS
+function htmlCobros(){
+  const {cuotas,trabajos}=data
+  const SC={pagado:'green',vencido:'red',parcial:'amber',pendiente:'gray'}
+  const pend=cuotas.filter(c=>c.estado!=='pagado').reduce((s,c)=>s+(parseFloat(c.acordado||0)-parseFloat(c.pagado||0)),0)
+  const venc=cuotas.filter(c=>c.estado==='vencido')
+  let html=''
+  if(venc.length) html+='<div style="background:#fee2e2;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;color:#dc2626">⚠️ <strong>'+venc.length+' cuota'+(venc.length>1?'s':'')+' vencida'+(venc.length>1?'s':'')+'</strong></div>'
+  html+='<div class="kpis" style="margin-bottom:14px"><div class="kpi"><div class="kpi-i" style="background:#fef3c7">💰</div><div><div class="kpi-n" style="color:#b45309">$'+pend.toFixed(0)+'</div><div class="kpi-l">Por cobrar</div></div></div></div>'
+  html+='<div class="card"><table><thead><tr><th>Trabajo</th><th>Cuota</th><th>Vence</th><th>Acordado</th><th>Pagado</th><th>Saldo</th><th>Estado</th></tr></thead><tbody>'
+  if(cuotas.length){cuotas.forEach(c=>{
+    const t=trabajos.find(x=>x.id===c.trabajoId)
+    const saldo=parseFloat(c.acordado||0)-parseFloat(c.pagado||0)
+    html+='<tr><td>'+esc(t&&t.titulo||'—')+'</td><td>'+esc(c.label||'—')+'</td><td>'+esc(c.fechaVencimiento||'—')+'</td>'
+    +'<td>$'+esc(c.acordado||0)+'</td><td style="color:#15803d">$'+esc(c.pagado||0)+'</td>'
+    +'<td style="font-weight:600;color:'+(saldo>0?'#b45309':'#15803d')+'">$'+saldo.toFixed(2)+'</td>'
+    +'<td>'+bdg(c.estado||'pendiente',SC[c.estado]||'gray')+'</td></tr>'
+  })}else html+='<tr><td colspan="7" class="empty">Sin cuotas</td></tr>'
+  html+='</tbody></table></div>'
+  return html
+}
+
+// REUNIONES
+function htmlReuniones(){
+  const {reuniones,clientes}=data
+  let html='<div class="tb"><button class="btn btn-p" onclick="openModal(\'reunion\',null)">+ Nueva reunión</button></div>'
+  html+='<div class="card"><table><thead><tr><th>Título</th><th>Cliente</th><th>Fecha</th><th>Hora</th><th>Plataforma</th><th>Enlace</th></tr></thead><tbody>'
+  if(reuniones.length){reuniones.forEach(r=>{
+    const cl=clientes.find(c=>c.id===r.clienteId)
+    html+='<tr><td><strong>'+esc(r.titulo)+'</strong></td><td>'+esc(cl&&cl.nombre||'—')+'</td><td>'+esc(r.fecha||'—')+'</td><td>'+esc(r.hora||'—')+'</td><td>'+esc(r.plataforma||'—')+'</td>'
+    +'<td>'+(r.link?'<a href="'+esc(r.link)+'" target="_blank" style="color:#1d4ed8;font-weight:600">Unirse</a>':'—')+'</td></tr>'
+  })}else html+='<tr><td colspan="6" class="empty">Sin reuniones</td></tr>'
+  html+='</tbody></table></div>'
+  return html
+}
+
+// MODALES
+function openModal(type,rec){modal={type,rec:rec||{}};draw()}
+function closeModal(){modal=null;draw()}
+
+function htmlModal(){
+  if(!modal)return''
+  let c=''
+  if(modal.type==='cliente') c=mCliente(modal.rec)
+  if(modal.type==='trabajo') c=mTrabajo(modal.rec)
+  if(modal.type==='reunion') c=mReunion(modal.rec)
+  return'<div class="ov" onclick="if(event.target===this)closeModal()"><div class="modal">'+c+'</div></div>'
+}
+
+function mCliente(d){
+  const isE=!!d.id
+  return'<h3>'+(isE?'Editar':'Nuevo')+' cliente</h3>'
+    +'<div class="fg">'
+    +'<div class="full"><label>Nombre completo *</label><input id="f0" value="'+esc(d.nombre||'')+'"/></div>'
+    +'<div><label>Teléfono</label><input id="f1" value="'+esc(d.telefono||'')+'"/></div>'
+    +'<div><label>Email</label><input id="f2" type="email" value="'+esc(d.email||'')+'"/></div>'
+    +'<div><label>Institución</label><input id="f3" value="'+esc(d.institucion||'')+'"/></div>'
+    +'<div><label>Ciudad</label><input id="f4" value="'+esc(d.ciudad||'')+'"/></div>'
+    +'<div class="full"><label>Notas</label><textarea id="f5">'+esc(d.notas||'')+'</textarea></div>'
+    +'</div><div class="ma">'
+    +'<button class="btn btn-g" onclick="closeModal()">Cancelar</button>'
+    +'<button class="btn btn-p" onclick="submitCliente(\''+esc(d.id||'')+'\')"><strong>'+(isE?'Actualizar':'Registrar')+'</strong></button>'
+    +'</div>'
+}
+function submitCliente(id){
+  const nombre=v('f0').trim()
+  if(!nombre){alert('El nombre es obligatorio');return}
+  const rec={id:id||uid(),nombre,telefono:v('f1'),email:v('f2'),institucion:v('f3'),ciudad:v('f4'),notas:v('f5'),createdAt:id?(modal.rec.createdAt||''):new Date().toISOString()}
+  saveRec('Clientes',rec,!id)
+}
+
+function mTrabajo(d){
+  const isE=!!d.id
+  const TIPOS=['Asesoría de tesis/proyectos','Análisis estadístico','Artículo científico','Publicación en revistas','Revisión bibliográfica','Diseño de instrumentos','Otro']
+  const ESTADOS=['Nuevo','En progreso','Revisión','Completado','Cancelado']
+  let s='<h3>'+(isE?'Editar':'Nuevo')+' trabajo</h3><div class="fg">'
+    +'<div class="full"><label>Título *</label><input id="f0" value="'+esc(d.titulo||'')+'"/></div>'
+    +'<div class="full"><label>Cliente *</label><select id="f1"><option value="">Seleccionar cliente...</option>'
+    +data.clientes.map(c=>'<option value="'+esc(c.id)+'"'+(d.clienteId===c.id?' selected':'')+'>'+esc(c.nombre)+'</option>').join('')
+    +'</select></div>'
+    +'<div><label>Tipo</label><select id="f2">'+TIPOS.map(t=>'<option'+(d.tipo===t?' selected':'')+'>'+esc(t)+'</option>').join('')+'</select></div>'
+    +'<div><label>Estado</label><select id="f3">'+ESTADOS.map(e=>'<option'+(d.estado===e?' selected':'')+'>'+esc(e)+'</option>').join('')+'</select></div>'
+    +'<div><label>Total ($)</label><input id="f4" type="number" min="0" value="'+esc(d.total||'')+'"/></div>'
+    +'<div><label>Progreso (%)</label><input id="f5" type="number" min="0" max="100" value="'+esc(d.progreso||0)+'"/></div>'
+    +'<div><label>Fecha inicio</label><input id="f6" type="date" value="'+esc(d.fechaInicio||'')+'"/></div>'
+    +'<div><label>Fecha entrega</label><input id="f7" type="date" value="'+esc(d.fechaFin||'')+'"/></div>'
+    +'<div class="full"><label>Notas</label><textarea id="f8">'+esc(d.notas||'')+'</textarea></div>'
+    +'</div><div class="ma"><button class="btn btn-g" onclick="closeModal()">Cancelar</button>'
+    +'<button class="btn btn-p" onclick="submitTrabajo(\''+esc(d.id||'')+'\')"><strong>'+(isE?'Actualizar':'Registrar')+'</strong></button></div>'
+  return s
+}
+function submitTrabajo(id){
+  const titulo=v('f0'),clienteId=v('f1')
+  if(!titulo){alert('El título es obligatorio');return}
+  if(!clienteId){alert('Selecciona un cliente');return}
+  const cl=data.clientes.find(c=>c.id===clienteId)
+  const rec={id:id||uid(),clienteId,clienteNombre:cl&&cl.nombre||'',titulo,tipo:v('f2'),estado:v('f3'),total:v('f4'),progreso:v('f5'),fechaInicio:v('f6'),fechaFin:v('f7'),notas:v('f8'),createdAt:id?(modal.rec.createdAt||''):new Date().toISOString()}
+  saveRec('Trabajos',rec,!id)
+}
+
+function mReunion(d){
+  const today=new Date().toISOString().slice(0,10)
+  return'<h3>Nueva reunión</h3><div class="fg">'
+    +'<div class="full"><label>Título *</label><input id="f0" value="'+esc(d.titulo||'')+'"/></div>'
+    +'<div class="full"><label>Cliente</label><select id="f1"><option value="">Seleccionar...</option>'
+    +data.clientes.map(c=>'<option value="'+esc(c.id)+'"'+(d.clienteId===c.id?' selected':'')+'>'+esc(c.nombre)+'</option>').join('')
+    +'</select></div>'
+    +'<div><label>Fecha</label><input id="f2" type="date" value="'+esc(d.fecha||today)+'"/></div>'
+    +'<div><label>Hora</label><input id="f3" type="time" value="'+esc(d.hora||'09:00')+'"/></div>'
+    +'<div><label>Plataforma</label><input id="f4" value="'+esc(d.plataforma||'Google Meet')+'"/></div>'
+    +'<div><label>Enlace</label><input id="f5" value="'+esc(d.link||'')+'"/></div>'
+    +'<div class="full"><label>Notas</label><textarea id="f6">'+esc(d.notas||'')+'</textarea></div>'
+    +'</div><div class="ma"><button class="btn btn-g" onclick="closeModal()">Cancelar</button>'
+    +'<button class="btn btn-p" onclick="submitReunion(\''+esc(d.id||'')+'\')"><strong>Guardar</strong></button></div>'
+}
+function submitReunion(id){
+  const titulo=v('f0')
+  if(!titulo){alert('El título es obligatorio');return}
+  const rec={id:id||uid(),titulo,clienteId:v('f1'),fecha:v('f2'),hora:v('f3'),plataforma:v('f4'),link:v('f5'),notas:v('f6')}
+  saveRec('Reuniones',rec,!id)
+}
+
+draw()
+</script>
+</body>
+</html>
