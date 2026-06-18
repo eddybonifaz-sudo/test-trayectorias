@@ -20,7 +20,7 @@ function buildConsentHTML() {
   const info = APP_CONFIG.PROJECT_INFO;
   const contacto = info.contactoCorreo
     ? `el correo <strong>${info.contactoCorreo}</strong>${info.contactoTelefono ? ` o el teléfono <strong>${info.contactoTelefono}</strong>` : ""}`
-    : "el equipo de investigación a través de los canales institucionales de la Universidad de Otavalo / UNACH";
+    : "el equipo de investigación a través de los canales institucionales de la Universidad de Otavalo / UNAD";
 
   return `
     <h3>1. Propósito del estudio</h3>
