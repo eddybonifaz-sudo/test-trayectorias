@@ -447,3 +447,55 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
   vertical-align: -2px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============ LOGOS EN PORTADA ============ */
+.logos-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+.logo-uni {
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* ============ SELECT (lista desplegable) ============ */
+select.q-select {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234A5550' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  cursor: pointer;
+}
+select.q-select:focus {
+  outline: 2px solid var(--color-terracotta);
+  outline-offset: 1px;
+  border-color: var(--color-terracotta);
+}
+
+/* ============ HINT DE SELECCIÓN MÚLTIPLE ============ */
+.q-multi-hint {
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  color: var(--color-terracotta-dark);
+  background: #FBEFE8;
+  border: 1px solid #EFD9C9;
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.75rem;
+  margin-bottom: var(--space-2);
+  display: inline-block;
+}

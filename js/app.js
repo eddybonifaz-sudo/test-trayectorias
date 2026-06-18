@@ -122,12 +122,21 @@
       });
     });
 
+    // Listas desplegables (select) para semestre y año
+    container.querySelectorAll("select.q-select").forEach((sel) => {
+      sel.addEventListener("change", () => {
+        state.answers[sel.dataset.question] = sel.value;
+        clearError(sel.dataset.question);
+      });
+    });
+
     container.querySelectorAll(".option-text-input").forEach((input) => {
       input.addEventListener("input", () => {
         const qId = input.dataset.question;
         const optValue = input.dataset.optionText;
         if (!state.textAnswers[qId]) state.textAnswers[qId] = {};
-        state.textAnswers[qId][optValue] = input.value;
+        // Guardar con primera letra en mayúscula
+        state.textAnswers[qId][optValue] = capitalize(input.value);
         state.answers[`${qId}__text`] = state.textAnswers[qId];
       });
     });
@@ -197,6 +206,11 @@
     return QUESTIONS.some((q) => q.dependsOn && q.dependsOn.id === questionId);
   }
 
+  function capitalize(str) {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   // ---------------------------------------------------------------
   // Validación y navegación pregunta-a-pregunta
   // ---------------------------------------------------------------
@@ -204,6 +218,8 @@
     const value = state.answers[q.id];
     if (q.type === "multi") {
       if (!Array.isArray(value) || value.length === 0) return "Selecciona al menos una opción.";
+    } else if (q.type === "select") {
+      if (!value || value === "") return "Selecciona una opción de la lista.";
     } else if (q.type === "number") {
       if (value === undefined || value === null || value === "") return "Este campo es obligatorio.";
       const num = Number(value);
@@ -324,11 +340,15 @@
     const flatAnswers = {};
     QUESTIONS.forEach((q) => {
       const v = state.answers[q.id];
-      flatAnswers[q.id] = Array.isArray(v) ? v.join("; ") : (v ?? "");
+      if (Array.isArray(v)) {
+        flatAnswers[q.id] = v.map(capitalize).join("; ");
+      } else {
+        flatAnswers[q.id] = v ? capitalize(String(v)) : "";
+      }
     });
     const flatTextAnswers = {};
     Object.keys(state.textAnswers).forEach((qId) => {
-      flatTextAnswers[`${qId}_otro_texto`] = Object.values(state.textAnswers[qId]).join("; ");
+      flatTextAnswers[`${qId}_otro_texto`] = Object.values(state.textAnswers[qId]).map(capitalize).join("; ");
     });
 
     return {

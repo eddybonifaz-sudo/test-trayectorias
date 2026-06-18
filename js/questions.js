@@ -128,6 +128,7 @@ const QUESTIONS = [
     dim: 1,
     text: "¿Considera que alguna de las siguientes situaciones de violencia o conflictos sociales y/o políticos han afectado su proceso formativo?",
     type: "multi",
+    multiHint: true,
     options: [
       { value: "desplazamiento", label: "Desplazamiento o cambio de residencia por violencia/inseguridad", risk: 2 },
       { value: "estigmatizacion", label: "Estigmatización o discriminación", risk: 2 },
@@ -200,9 +201,11 @@ const QUESTIONS = [
     id: "p13",
     dim: 2,
     text: "Año de ingreso a la carrera",
-    type: "number",
-    min: 1990,
-    max: 2026,
+    type: "select",
+    options: Array.from({ length: 2026 - 1990 + 1 }, (_, i) => {
+      const y = String(2026 - i);
+      return { value: y, label: y };
+    }),
   },
   {
     id: "p14",
@@ -224,8 +227,20 @@ const QUESTIONS = [
     dim: 2,
     section: "Para estudiantes activos",
     text: "Semestre que cursa actualmente",
-    type: "text",
+    type: "select",
     showIf: (p) => p === PROFILE.ACTIVO || p === PROFILE.INTERRUPCION,
+    options: [
+      { value: "1", label: "1° semestre" },
+      { value: "2", label: "2° semestre" },
+      { value: "3", label: "3° semestre" },
+      { value: "4", label: "4° semestre" },
+      { value: "5", label: "5° semestre" },
+      { value: "6", label: "6° semestre" },
+      { value: "7", label: "7° semestre" },
+      { value: "8", label: "8° semestre" },
+      { value: "9", label: "9° semestre" },
+      { value: "10", label: "10° semestre" },
+    ],
   },
   {
     id: "p16",
@@ -349,6 +364,7 @@ const QUESTIONS = [
     section: "Para estudiantes retirados",
     text: "En caso de que usted haya abandonado el proceso formativo, ¿cuál fue la principal razón por la que decidió retirarse de la carrera? (Puede seleccionar varias)",
     type: "multi",
+    multiHint: true,
     showIf: (p) => p === PROFILE.RETIRADO,
     options: [
       { value: "economicos", label: "Motivos económicos", risk: 2 },
@@ -493,6 +509,7 @@ const QUESTIONS = [
     dim: 4,
     text: "¿Qué factor ha sido clave para que continúe estudiando? (Puede seleccionar varias)",
     type: "multi",
+    multiHint: true,
     options: [
       { value: "apoyo_familiar", label: "Apoyo familiar" },
       { value: "motivacion_personal", label: "Motivación personal" },

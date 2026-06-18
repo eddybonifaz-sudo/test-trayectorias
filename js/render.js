@@ -2,12 +2,11 @@
  * render.js
  * ------------------------------------------------------------------
  * Construye dinámicamente los slides de preguntas dentro de
- * #questionsContainer, incluyendo:
- *   - El slide especial de selección de perfil (P14) que determina
- *     qué bloque de preguntas se mostrará después.
- *   - Un slide por cada pregunta visible para el perfil actual.
- *   - Reconstrucción del DOM cuando cambia el perfil seleccionado,
- *     para no mostrar preguntas de otros perfiles.
+ * #questionsContainer.
+ * Cambios v2:
+ *  - Soporte tipo "select" (lista desplegable) para años y semestres
+ *  - Mensaje de ayuda en preguntas multi (multiHint)
+ *  - Capitalización automática de la primera letra en texto libre
  * ------------------------------------------------------------------
  */
 
@@ -22,10 +21,11 @@ const Render = (() => {
       .replace(/"/g, "&quot;");
   }
 
-  /**
-   * Determina si una pregunta debe mostrarse dado el perfil actual y
-   * las respuestas ya dadas (para dependsOn).
-   */
+  function capitalize(str) {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   function isVisible(q, profile, answers) {
     if (q.showIf && !q.showIf(profile)) return false;
     if (q.dependsOn) {
@@ -44,11 +44,6 @@ const Render = (() => {
     return true;
   }
 
-  /**
-   * Devuelve, en orden, la lista de preguntas visibles para el perfil
-   * y respuestas actuales. Se recalcula cada vez que cambia algo
-   * relevante (perfil, o una respuesta de la que depende otra).
-   */
   function getVisibleQuestions(profile, answers) {
     return QUESTIONS.filter((q) => isVisible(q, profile, answers));
   }
@@ -57,19 +52,33 @@ const Render = (() => {
     const inputType = q.type === "multi" ? "checkbox" : "radio";
     const name = q.type === "multi" ? `${q.id}[]` : q.id;
     const inputId = `${q.id}_opt${index}`;
-    const textInputId = `${q.id}_opt${index}_text`;
     return `
       <label class="option-row" data-option-row data-question="${q.id}" data-value="${escapeHtml(opt.value)}">
         <input type="${inputType}" id="${inputId}" name="${name}" value="${escapeHtml(opt.value)}" data-question="${q.id}" data-exclusive="${!!opt.exclusive}" />
         <span class="option-label">${escapeHtml(opt.label)}</span>
       </label>
-      ${opt.hasText ? `<input type="text" class="option-text-input" id="${textInputId}" data-question="${q.id}" data-option-text="${escapeHtml(opt.value)}" placeholder="${escapeHtml(opt.textLabel || "Especifique")}" style="display:none;" />` : ""}
+      ${opt.hasText ? `<input type="text" class="option-text-input" id="${q.id}_opt${index}_text" data-question="${q.id}" data-option-text="${escapeHtml(opt.value)}" placeholder="${escapeHtml(opt.textLabel || "Especifique")}" style="display:none;" />` : ""}
+    `;
+  }
+
+  function renderSelect(q) {
+    return `
+      <select class="q-select" id="${q.id}" data-question="${q.id}">
+        <option value="">— Seleccione una opción —</option>
+        ${q.options.map(opt => `<option value="${escapeHtml(opt.value)}">${escapeHtml(opt.label)}</option>`).join("")}
+      </select>
     `;
   }
 
   function renderQuestionBody(q) {
+    if (q.type === "select") {
+      return renderSelect(q);
+    }
     if (q.type === "single" || q.type === "multi") {
-      return `<div class="options-list" data-options-list="${q.id}">
+      const hint = q.multiHint
+        ? `<p class="q-multi-hint">Puedes seleccionar varias opciones.</p>`
+        : "";
+      return `${hint}<div class="options-list" data-options-list="${q.id}">
         ${q.options.map((opt, i) => renderOption(q, opt, i)).join("")}
       </div>`;
     }
@@ -102,11 +111,6 @@ const Render = (() => {
     `;
   }
 
-  /**
-   * Re-renderiza todas las preguntas visibles para el perfil/answers
-   * actuales. Preserva los valores ya ingresados cuando sea posible
-   * (se restauran después de inyectar el HTML).
-   */
   function renderAll(profile, answers) {
     const visible = getVisibleQuestions(profile, answers);
     const html = visible.map((q, i) => renderQuestionSlide(q, i, visible.length)).join("");
@@ -120,7 +124,10 @@ const Render = (() => {
       const value = answers[q.id];
       if (value === undefined || value === null) return;
 
-      if (q.type === "single") {
+      if (q.type === "select") {
+        const sel = container().querySelector(`#${q.id}`);
+        if (sel) sel.value = value;
+      } else if (q.type === "single") {
         const input = container().querySelector(`input[name="${q.id}"][value="${cssEscape(value)}"]`);
         if (input) {
           input.checked = true;
@@ -141,7 +148,6 @@ const Render = (() => {
         if (input) input.value = value;
       }
 
-      // Restaurar texto libre de opción "otro"
       const textAnswers = answers[`${q.id}__text`] || {};
       Object.keys(textAnswers).forEach((optValue) => {
         const textInput = container().querySelector(`[data-question="${q.id}"][data-option-text="${cssEscape(optValue)}"]`);
@@ -166,7 +172,7 @@ const Render = (() => {
     return String(value).replace(/["\\]/g, "\\$&");
   }
 
-  return { getVisibleQuestions, renderAll, isVisible };
+  return { getVisibleQuestions, renderAll, isVisible, capitalize };
 })();
 
 if (typeof module !== "undefined") {
