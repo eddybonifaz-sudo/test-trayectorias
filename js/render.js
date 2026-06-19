@@ -70,9 +70,40 @@ const Render = (() => {
     `;
   }
 
+  function renderLikert(q) {
+    const cols = q.likertScale;
+    return `
+      <div class="likert-table-wrap">
+        <table class="likert-table">
+          <thead>
+            <tr>
+              <th class="likert-factor-head">Factor</th>
+              ${cols.map(c => `<th>${escapeHtml(c.label)}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${q.items.map(item => `
+              <tr>
+                <td class="likert-factor-label">${escapeHtml(item.label)}</td>
+                ${cols.map(c => `
+                  <td class="likert-cell">
+                    <input type="radio" name="${item.id}" value="${c.value}" data-likert-item="${item.id}" data-parent="${q.id}" />
+                  </td>
+                `).join("")}
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
   function renderQuestionBody(q) {
     if (q.type === "select") {
       return renderSelect(q);
+    }
+    if (q.type === "likert") {
+      return renderLikert(q);
     }
     if (q.type === "single" || q.type === "multi") {
       const hint = q.multiHint
@@ -85,7 +116,6 @@ const Render = (() => {
     if (q.type === "number") {
       return `<input type="number" class="q-input" id="${q.id}" data-question="${q.id}" min="${q.min || ""}" max="${q.max || ""}" placeholder="Ej. ${q.max || "2024"}" />`;
     }
-    // text
     return `<input type="text" class="q-input" id="${q.id}" data-question="${q.id}" placeholder="Escriba su respuesta" />`;
   }
 
@@ -122,6 +152,19 @@ const Render = (() => {
   function restoreAnswers(visibleQuestions, answers) {
     visibleQuestions.forEach((q) => {
       const value = answers[q.id];
+
+      if (q.type === "likert") {
+        // Restaurar cada fila de la tabla likert
+        q.items.forEach(item => {
+          const v = answers[item.id];
+          if (v) {
+            const input = container().querySelector(`input[name="${item.id}"][value="${v}"]`);
+            if (input) input.checked = true;
+          }
+        });
+        return;
+      }
+
       if (value === undefined || value === null) return;
 
       if (q.type === "select") {

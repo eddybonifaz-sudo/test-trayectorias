@@ -130,6 +130,14 @@
       });
     });
 
+    // Tabla Likert (P35)
+    container.querySelectorAll("input[data-likert-item]").forEach((input) => {
+      input.addEventListener("change", () => {
+        state.answers[input.dataset.likertItem] = input.value;
+        clearError(input.dataset.parent);
+      });
+    });
+
     container.querySelectorAll(".option-text-input").forEach((input) => {
       input.addEventListener("input", () => {
         const qId = input.dataset.question;
@@ -216,6 +224,12 @@
   // ---------------------------------------------------------------
   function validateQuestion(q) {
     const value = state.answers[q.id];
+    if (q.type === "likert") {
+      // Verificar que todos los ítems tengan respuesta
+      const unanswered = q.items.filter(item => !state.answers[item.id]);
+      if (unanswered.length > 0) return `Faltan ${unanswered.length} fila(s) por calificar.`;
+      return null;
+    }
     if (q.type === "multi") {
       if (!Array.isArray(value) || value.length === 0) return "Selecciona al menos una opción.";
     } else if (q.type === "select") {
@@ -339,11 +353,18 @@
   function buildPayload(barema) {
     const flatAnswers = {};
     QUESTIONS.forEach((q) => {
-      const v = state.answers[q.id];
-      if (Array.isArray(v)) {
-        flatAnswers[q.id] = v.map(capitalize).join("; ");
+      if (q.type === "likert") {
+        // Cada ítem de la tabla likert va como columna separada
+        q.items.forEach(item => {
+          flatAnswers[item.id] = state.answers[item.id] || "";
+        });
       } else {
-        flatAnswers[q.id] = v ? capitalize(String(v)) : "";
+        const v = state.answers[q.id];
+        if (Array.isArray(v)) {
+          flatAnswers[q.id] = v.map(capitalize).join("; ");
+        } else {
+          flatAnswers[q.id] = v ? capitalize(String(v)) : "";
+        }
       }
     });
     const flatTextAnswers = {};
@@ -384,22 +405,9 @@
 
   function showResult(barema) {
     state.submitted = true;
-    document.getElementById("resultLevel").textContent = barema.level.level;
-    document.getElementById("resultLevel").style.color = barema.level.color;
-    document.getElementById("resultScore").textContent = `Índice: ${barema.normalized} / 100`;
-    document.getElementById("resultDesc").textContent = barema.level.description;
-
-    const fill = document.getElementById("resultBarFill");
-    fill.style.background = barema.level.color;
-
+    // El baremo se almacena en Sheets pero NO se muestra al participante
     document.getElementById("slide-result").hidden = false;
     goToSlide("slide-result");
-
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        fill.style.width = `${barema.normalized}%`;
-      }, 150);
-    });
   }
 
   // ---------------------------------------------------------------
